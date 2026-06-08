@@ -205,6 +205,16 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
 .pkey:active{background:var(--pri-l);border-color:var(--pri);color:var(--pri)}
 .pkey.del{font-size:18px;color:var(--mu)}
 .pin-err{color:var(--r);font-size:13px;font-weight:700;min-height:18px;margin-top:8px}
+.emoji-picker-wrap{position:relative}
+.emoji-display{display:flex;align-items:center;gap:8px;width:100%;background:var(--bg);border:1.5px solid var(--br);border-radius:12px;padding:10px 13px;cursor:pointer;font-size:15px;font-family:var(--fb);color:var(--tx);-webkit-appearance:none}
+.emoji-display:active{border-color:var(--pri)}
+.emoji-display .esel{font-size:22px;line-height:1}
+.emoji-display .earrow{margin-left:auto;color:var(--mu);font-size:13px}
+.emoji-grid{display:none;position:absolute;top:calc(100% + 5px);left:0;right:0;z-index:200;background:var(--card);border:1.5px solid var(--br);border-radius:16px;padding:10px;box-shadow:0 8px 24px rgba(0,0,0,.12);max-height:200px;overflow-y:auto}
+.emoji-grid.open{display:grid;grid-template-columns:repeat(8,1fr);gap:3px}
+.emoji-grid::-webkit-scrollbar{display:none}
+.egbtn{background:transparent;border:none;font-size:22px;padding:5px;cursor:pointer;border-radius:8px;-webkit-appearance:none;line-height:1}
+.egbtn:active,.egbtn:hover{background:var(--pri-l)}
 </style>
 </head>
 <body>
@@ -324,6 +334,7 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
             <div class="ph-total" id="ph-total">Tổng: —</div>
           </div>
           <button class="ph-lock" onclick="lockPersonal()"><i class="ti ti-lock"></i> Khoá</button>
+          <button class="ph-lock" style="background:rgba(255,255,255,.15);margin-left:5px" onclick="openChangePinFlow()"><i class="ti ti-key"></i> Đổi PIN</button>
         </div>
         <div class="sec-title">
           Tài khoản &amp; Ví
@@ -405,6 +416,46 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
       </div>
     </div>
     <button class="cbtn" onclick="closeOv('pin')" style="margin-top:16px">Huỷ</button>
+  </div>
+</div>
+
+<!-- CHANGE PIN -->
+<div class="overlay" id="overlay-change-pin">
+  <div class="sheet">
+    <div class="handle"></div>
+    <div class="pin-modal" id="cpin-step-old">
+      <div class="pin-big" id="cpin-emoji">👤</div>
+      <div class="pin-nm" id="cpin-name">—</div>
+      <div class="pin-hint">Nhập PIN hiện tại để xác nhận</div>
+      <div class="pin-dots" id="cpin-dots-old">
+        <div class="pin-dot"></div><div class="pin-dot"></div>
+        <div class="pin-dot"></div><div class="pin-dot"></div>
+      </div>
+      <div class="pin-err" id="cpin-err-old"></div>
+      <div class="pin-pad">
+        <button class="pkey" onclick="cpKey('1')">1</button><button class="pkey" onclick="cpKey('2')">2</button><button class="pkey" onclick="cpKey('3')">3</button>
+        <button class="pkey" onclick="cpKey('4')">4</button><button class="pkey" onclick="cpKey('5')">5</button><button class="pkey" onclick="cpKey('6')">6</button>
+        <button class="pkey" onclick="cpKey('7')">7</button><button class="pkey" onclick="cpKey('8')">8</button><button class="pkey" onclick="cpKey('9')">9</button>
+        <div></div><button class="pkey" onclick="cpKey('0')">0</button><button class="pkey del" onclick="cpDel()"><i class="ti ti-backspace"></i></button>
+      </div>
+    </div>
+    <div class="pin-modal" id="cpin-step-new" style="display:none">
+      <div class="pin-big">🔑</div>
+      <div class="pin-nm" id="cpin-name2">—</div>
+      <div class="pin-hint" id="cpin-hint-new">Nhập PIN mới (4 số)</div>
+      <div class="pin-dots" id="cpin-dots-new">
+        <div class="pin-dot"></div><div class="pin-dot"></div>
+        <div class="pin-dot"></div><div class="pin-dot"></div>
+      </div>
+      <div class="pin-err" id="cpin-err-new"></div>
+      <div class="pin-pad">
+        <button class="pkey" onclick="cpKey('1')">1</button><button class="pkey" onclick="cpKey('2')">2</button><button class="pkey" onclick="cpKey('3')">3</button>
+        <button class="pkey" onclick="cpKey('4')">4</button><button class="pkey" onclick="cpKey('5')">5</button><button class="pkey" onclick="cpKey('6')">6</button>
+        <button class="pkey" onclick="cpKey('7')">7</button><button class="pkey" onclick="cpKey('8')">8</button><button class="pkey" onclick="cpKey('9')">9</button>
+        <div></div><button class="pkey" onclick="cpKey('0')">0</button><button class="pkey del" onclick="cpDel()"><i class="ti ti-backspace"></i></button>
+      </div>
+    </div>
+    <button class="cbtn" onclick="closeOv('change-pin')" style="margin-top:16px">Huỷ</button>
   </div>
 </div>
 
@@ -503,8 +554,17 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
     <div class="handle"></div>
     <div class="sh-title" id="inv-sh-title">📦 Thêm mặt hàng kho</div>
     <input type="hidden" id="edit-inv-id">
-    <div class="fg"><label class="fl">Emoji</label>
-      <input class="fi" id="inv-emoji" type="text" placeholder="🧻" maxlength="2"></div>
+    <div class="fg"><label class="fl">Emoji mặt hàng</label>
+      <div class="emoji-picker-wrap">
+        <button type="button" class="emoji-display" onclick="toggleEmojiGrid('inv-emoji-grid','inv-emoji-val')">
+          <span class="esel" id="inv-emoji-val">📦</span>
+          <span style="font-size:13px;color:var(--mu)">Chọn emoji</span>
+          <span class="earrow">▼</span>
+        </button>
+        <div class="emoji-grid" id="inv-emoji-grid"></div>
+      </div>
+      <input type="hidden" id="inv-emoji" value="📦">
+    </div>
     <div class="fg"><label class="fl">Tên mặt hàng</label>
       <input class="fi" id="inv-name" type="text" placeholder="Khăn giấy..."></div>
     <div class="fg"><label class="fl">Số lượng</label>
@@ -555,7 +615,16 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
     <div class="fg"><label class="fl">Tên thành viên</label>
       <input class="fi" id="mem-name" type="text" placeholder="Bố Minh..."></div>
     <div class="fg"><label class="fl">Emoji đại diện</label>
-      <input class="fi" id="mem-emoji" type="text" placeholder="👨" maxlength="2"></div>
+      <div class="emoji-picker-wrap">
+        <button type="button" class="emoji-display" onclick="toggleEmojiGrid('mem-emoji-grid','mem-emoji-val')">
+          <span class="esel" id="mem-emoji-val">👤</span>
+          <span style="font-size:13px;color:var(--mu)">Chọn emoji</span>
+          <span class="earrow">▼</span>
+        </button>
+        <div class="emoji-grid" id="mem-emoji-grid"></div>
+      </div>
+      <input type="hidden" id="mem-emoji" value="👤">
+    </div>
     <div class="fg"><label class="fl">Vai trò</label>
       <select class="fi" id="mem-role">
         <option value="parent">Bố / Mẹ</option>
@@ -999,6 +1068,79 @@ function lockPersonal(){
   document.getElementById('lock-notice').style.display='flex';
   showToast('🔒 Đã khoá ví');
 }
+
+// ─── CHANGE PIN ───────────────────────────────────────
+let cpBuf='', cpStep='old', cpNewPin='';
+function openChangePinFlow(){
+  if(!S.personal.mid){showToast('❗ Vui lòng mở ví trước');return;}
+  cpBuf=''; cpStep='old'; cpNewPin='';
+  document.getElementById('cpin-emoji').textContent = S.personal.emoji;
+  document.getElementById('cpin-name').textContent  = S.personal.name;
+  document.getElementById('cpin-name2').textContent = S.personal.name;
+  document.getElementById('cpin-err-old').textContent = '';
+  document.getElementById('cpin-err-new').textContent = '';
+  document.getElementById('cpin-hint-new').textContent = 'Nhập PIN mới (4 số)';
+  document.getElementById('cpin-step-old').style.display = '';
+  document.getElementById('cpin-step-new').style.display = 'none';
+  updCpDots();
+  openOv('change-pin');
+}
+function cpKey(d){if(cpBuf.length>=4)return;cpBuf+=d;updCpDots();if(cpBuf.length===4)setTimeout(cpSubmit,150);}
+function cpDel(){cpBuf=cpBuf.slice(0,-1);updCpDots();}
+function updCpDots(){
+  const dotsId = cpStep==='old' ? 'cpin-dots-old' : 'cpin-dots-new';
+  document.querySelectorAll('#'+dotsId+' .pin-dot').forEach((d,i)=>d.classList.toggle('filled',i<cpBuf.length));
+}
+async function cpSubmit(){
+  if(cpStep==='old'){
+    // Xác minh PIN cũ
+    document.getElementById('cpin-err-old').textContent='';
+    try{
+      const r = await api('GET',{action:'verify_pin',member_id:S.personal.mid,pin:cpBuf});
+      if(r.valid){
+        // Chuyển sang bước nhập PIN mới
+        cpStep='new'; cpBuf='';
+        document.getElementById('cpin-step-old').style.display='none';
+        document.getElementById('cpin-step-new').style.display='';
+        updCpDots();
+      } else {
+        document.getElementById('cpin-err-old').textContent='❌ Sai PIN, thử lại';
+        cpBuf=''; updCpDots();
+      }
+    }catch(e){
+      document.getElementById('cpin-err-old').textContent='❌ '+e.message;
+      cpBuf=''; updCpDots();
+    }
+  } else if(cpStep==='new'){
+    if(!cpNewPin){
+      // Lần nhập đầu: lưu tạm PIN mới, yêu cầu xác nhận lại
+      cpNewPin = cpBuf; cpBuf='';
+      document.getElementById('cpin-hint-new').textContent='Nhập lại PIN mới để xác nhận';
+      updCpDots();
+    } else {
+      // Lần nhập 2: kiểm tra khớp
+      if(cpBuf !== cpNewPin){
+        document.getElementById('cpin-err-new').textContent='❌ PIN không khớp, nhập lại';
+        cpNewPin=''; cpBuf='';
+        document.getElementById('cpin-hint-new').textContent='Nhập PIN mới (4 số)';
+        updCpDots();
+        return;
+      }
+      // Lưu PIN mới
+      try{
+        await api('POST',{action:'change_pin',member_id:S.personal.mid,old_pin:S.personal.pin,new_pin:cpNewPin});
+        S.personal.pin = cpNewPin;
+        closeOv('change-pin');
+        showToast('✅ Đổi PIN thành công!');
+      }catch(e){
+        document.getElementById('cpin-err-new').textContent='❌ '+e.message;
+        cpNewPin=''; cpBuf='';
+        document.getElementById('cpin-hint-new').textContent='Nhập PIN mới (4 số)';
+        updCpDots();
+      }
+    }
+  }
+}
 function renderPersonalContent(){
   const{name,emoji,accounts}=S.personal;
   document.getElementById('ph-avatar').textContent=emoji;
@@ -1152,7 +1294,9 @@ function editInv(id){
 function clearInvForm(){
   S.editInvId=null;
   document.getElementById('inv-sh-title').textContent='📦 Thêm mặt hàng kho';
-  ['edit-inv-id','inv-emoji','inv-name','inv-qty','inv-unit','inv-min'].forEach(id=>document.getElementById(id).value='');
+  ['edit-inv-id','inv-name','inv-qty','inv-unit','inv-min'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('inv-emoji').value='📦';
+  document.getElementById('inv-emoji-val').textContent='📦';
   document.getElementById('inv-cat').value='hygiene';
   document.getElementById('inv-sbtn').innerHTML='<i class="ti ti-device-floppy"></i> Lưu mặt hàng';
 }
@@ -1291,7 +1435,46 @@ async function submitShared(){
   showToast('✅ Đã thêm chi phí chung');
   document.getElementById('sh-desc').value=''; document.getElementById('sh-amt').value='';
 }
-async function submitMember(){
+// ─── EMOJI PICKER ─────────────────────────────────────
+const MEMBER_EMOJIS = ['👤','👨','👩','👦','👧','🧑','👴','👵','🧒','👶','🧔','👱','🧕','🧓',
+  '😀','😊','🥰','😎','🤓','🥳','😄','🤗','😇','🤩','🥸','🤭','😏','🤔',
+  '🐱','🐶','🐸','🐼','🐨','🦊','🦁','🐯','🐻','🐺','🦝','🦔','🐹','🐰'];
+const INV_EMOJIS = [
+  '🧻','🧴','🧼','🪥','🗑️','🧹','🧺','🧽','🪣','🫧',
+  '🍽️','🥄','🍳','🫕','🥢','🧂','🫙','🧊','🫖','☕',
+  '💊','🩺','🩹','🌡️','🪒','🪮','💉','🧴',
+  '🔧','🔨','🪛','⚙️','💡','🔦','🪫','🔋','🖊️','📦',
+  '🛒','🛍️','🎁','📦','🗃️','📁','📋','📌','📎','✂️',
+  '🌿','🌸','🍃','🌱','🌾','🪴','🍀','🌺','🌻','🌷'];
+
+function buildEmojiGrid(gridId, valId, hiddenId, emojis){
+  const grid = document.getElementById(gridId);
+  if(!grid) return;
+  grid.innerHTML = emojis.map(e=>
+    `<button class="egbtn" onclick="pickEmoji('${gridId}','${valId}','${hiddenId}','${e}')">${e}</button>`
+  ).join('');
+}
+function toggleEmojiGrid(gridId, valId){
+  const grid = document.getElementById(gridId);
+  if(!grid) return;
+  const isOpen = grid.classList.contains('open');
+  // Close all grids first
+  document.querySelectorAll('.emoji-grid.open').forEach(g=>g.classList.remove('open'));
+  if(!isOpen) grid.classList.add('open');
+}
+function pickEmoji(gridId, valId, hiddenId, emoji){
+  document.getElementById(valId).textContent = emoji;
+  document.getElementById(hiddenId).value = emoji;
+  document.getElementById(gridId).classList.remove('open');
+}
+// Close emoji grid on outside click
+document.addEventListener('click', e=>{
+  if(!e.target.closest('.emoji-picker-wrap')){
+    document.querySelectorAll('.emoji-grid.open').forEach(g=>g.classList.remove('open'));
+  }
+});
+
+
   const name=document.getElementById('mem-name').value.trim();
   const emoji=document.getElementById('mem-emoji').value.trim()||'👤';
   const role=document.getElementById('mem-role').value;
