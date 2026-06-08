@@ -759,7 +759,7 @@ async function api(method, p){
     } else {
       res = await fetch(CFG.GAS_URL, {
         method:'POST',
-        headers:{'Content-Type':'application/json'},
+        // headers:{'Content-Type':'application/json'},
         body:JSON.stringify(p)
       });
     }
