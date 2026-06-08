@@ -23,24 +23,20 @@
 }
 html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx);overflow:hidden;-webkit-overflow-scrolling:touch}
 #app{display:flex;flex-direction:column;height:100vh;height:-webkit-fill-available;max-width:480px;margin:0 auto;background:var(--bg);position:relative;overflow:hidden}
-/* TOPBAR */
 .topbar{background:var(--pri);padding:13px 16px 11px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;z-index:20}
 .tb-title{font-family:var(--fh);font-size:18px;font-weight:900;color:#fff;letter-spacing:-.3px}
 .tb-sub{font-size:11px;color:rgba(255,255,255,.65);font-weight:600;margin-top:1px}
 .tb-right{display:flex;gap:7px}
 .icon-btn{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-size:17px;-webkit-appearance:none;border-style:solid}
 .icon-btn:active{background:rgba(255,255,255,.3)}
-/* BOTTOM NAV */
 .bnav{position:absolute;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--br);display:flex;z-index:50;padding:5px 0;padding-bottom:calc(8px + var(--sb))}
 .bn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;font-weight:700;color:var(--mu);cursor:pointer;padding:2px 0;background:transparent;border:none;font-family:var(--fb);-webkit-appearance:none}
 .bn.active{color:var(--pri)}
 .bn i{font-size:20px}
-/* PAGES */
 .pages{flex:1;overflow:hidden;position:relative}
 .page{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;padding:14px 14px 96px;display:none;-webkit-overflow-scrolling:touch}
 .page.active{display:block}
 .page::-webkit-scrollbar{display:none}
-/* SETUP */
 #setup{position:fixed;inset:0;background:var(--bg);z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;overflow-y:auto}
 .setup-logo{font-size:60px;margin-bottom:14px}
 .setup-title{font-family:var(--fh);font-size:24px;font-weight:900;color:var(--pri);margin-bottom:8px}
@@ -49,13 +45,11 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
 .setup-card-title{font-family:var(--fh);font-size:14px;font-weight:800;margin-bottom:10px}
 .gas-input{width:100%;background:var(--bg);border:1.5px solid var(--br);border-radius:11px;padding:11px 13px;font-size:13px;font-family:var(--fb);color:var(--tx);outline:none;-webkit-appearance:none;word-break:break-all}
 .gas-input:focus{border-color:var(--pri)}
-/* SYNC */
 .sync-bar{display:flex;align-items:center;gap:9px;background:var(--gl);border:1px solid rgba(0,200,150,.25);border-radius:12px;padding:9px 13px;margin-bottom:13px}
 .sdot{width:7px;height:7px;border-radius:50%;background:var(--g);flex-shrink:0}
 .sdot.demo{background:var(--a)}.sdot.err{background:var(--r)}
 .stext{font-size:12px;font-weight:700;color:var(--gd);flex:1}
 .stime{font-size:11px;color:var(--g);font-weight:700;cursor:pointer;background:transparent;border:none;font-family:var(--fb);-webkit-appearance:none;padding:0}
-/* HERO */
 .hero{border-radius:22px;padding:20px 22px;margin-bottom:13px;color:#fff;position:relative;overflow:hidden}
 .hero::before{content:"";position:absolute;top:-40px;right:-40px;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.08)}
 .hero::after{content:"";position:absolute;bottom:-28px;left:-28px;width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,.06)}
@@ -65,19 +59,15 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
 .hero-row{display:flex;gap:16px}
 .hs-lbl{font-size:10px;opacity:.75;font-weight:600}
 .hs-val{font-size:14px;font-weight:800;margin-top:2px}
-/* STATS */
 .stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-bottom:13px}
 .stat-card{background:var(--card);border:1px solid var(--br);border-radius:16px;padding:13px;display:flex;flex-direction:column;gap:7px}
 .stat-ico{width:33px;height:33px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px}
 .stat-val{font-family:var(--fh);font-size:16px;font-weight:800}
 .stat-lbl{font-size:11px;color:var(--mu);font-weight:600}
-/* SEC TITLE */
 .sec-title{font-family:var(--fh);font-size:15px;font-weight:800;margin-bottom:9px;display:flex;align-items:center;justify-content:space-between}
-/* ADD BTN - Safari safe */
 .add-btn{font-size:12px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:4px;background:var(--gl);color:var(--gd);padding:6px 13px;border-radius:99px;border:1.5px solid rgba(0,200,150,.3);font-family:var(--fb);-webkit-appearance:none;text-decoration:none;line-height:1}
 .add-btn:active{opacity:.8}
 .add-btn.purple{background:var(--pri-l);color:var(--pri-d);border-color:rgba(108,99,255,.3)}
-/* MEMBERS ROW */
 .mrow{display:flex;gap:9px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px;margin-bottom:13px;-webkit-overflow-scrolling:touch}
 .mrow::-webkit-scrollbar{display:none}
 .mcard{flex:0 0 auto;width:108px;background:var(--card);border:1px solid var(--br);border-radius:16px;padding:12px 10px;cursor:pointer}
@@ -86,7 +76,6 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
 .mname{font-size:12px;font-weight:700;margin-bottom:2px}
 .mrole{font-size:10px;color:var(--mu);font-weight:600;margin-bottom:5px}
 .mlock{font-size:10px;color:var(--mu);display:flex;align-items:center;gap:3px}
-/* TX */
 .tx-list{display:flex;flex-direction:column;gap:7px}
 .tx-item{background:var(--card);border:1px solid var(--br);border-radius:15px;padding:11px 13px;display:flex;align-items:center;gap:11px}
 .tx-ico{width:37px;height:37px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
@@ -96,7 +85,6 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
 .tx-amt{font-family:var(--fh);font-size:14px;font-weight:800;white-space:nowrap}
 .tx-amt.in{color:var(--g)}.tx-amt.out{color:var(--r)}
 .tag{display:inline-flex;align-items:center;padding:2px 7px;border-radius:99px;font-size:10px;font-weight:700;background:var(--pri-l);color:var(--pri)}
-/* FLASHDECK */
 .fdwrap{margin-bottom:14px}
 .fdinner{position:relative;width:100%;height:148px;touch-action:pan-y}
 .fcard{position:absolute;inset:0;border-radius:20px;padding:18px 20px;color:#fff;overflow:hidden;cursor:grab;user-select:none;will-change:transform;-webkit-user-select:none;transition:transform .3s cubic-bezier(.4,0,.2,1),opacity .3s}
@@ -112,7 +100,6 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
 .ddot{width:6px;height:6px;border-radius:50%;background:var(--br);transition:all .2s;cursor:pointer;border:none;-webkit-appearance:none;padding:0}
 .ddot.active{background:var(--pri);width:18px}
 .dhint{text-align:center;font-size:11px;color:var(--mu);margin-top:5px;font-weight:600}
-/* ALERT */
 .acard{background:var(--card);border:1px solid var(--br);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:12px;margin-bottom:8px}
 .aico{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
 .ainfo{flex:1}.aname{font-size:13px;font-weight:600}
@@ -120,14 +107,12 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
 .aright{text-align:right;flex-shrink:0}
 .aamt{font-family:var(--fh);font-size:13px;font-weight:800}
 .abadge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;margin-top:3px;display:inline-block}
-/* CHART */
 .mini-chart{background:var(--card);border:1px solid var(--br);border-radius:16px;padding:14px;margin-bottom:13px}
 .chart-lbl{font-size:12px;color:var(--mu);font-weight:600;margin-bottom:10px}
 .bar-chart{display:flex;align-items:flex-end;gap:5px;height:60px}
 .bcol{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
 .bbar{width:100%;border-radius:5px 5px 0 0;min-height:4px}
 .blbl{font-size:10px;color:var(--mu);font-weight:600}
-/* ACCOUNTS */
 .accrow{display:flex;gap:9px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px;margin-bottom:13px;-webkit-overflow-scrolling:touch}
 .accrow::-webkit-scrollbar{display:none}
 .acc-card{flex:0 0 auto;width:158px;border-radius:18px;padding:14px;color:#fff;position:relative;overflow:hidden}
@@ -136,12 +121,10 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
 .acc-amt{font-family:var(--fh);font-size:18px;font-weight:900}
 .acc-name{font-size:11px;opacity:.85;margin-top:3px}
 .acc-actions{display:flex;gap:5px;margin-top:9px;position:relative;z-index:1}
-/* Safari-safe button */
 .acc-btn{font-size:11px;font-weight:700;padding:5px 10px;border-radius:99px;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.3);color:#fff;cursor:pointer;font-family:var(--fb);-webkit-appearance:none;display:inline-flex;align-items:center;gap:3px}
 .acc-btn:active{opacity:.7}
 .acc-add{flex:0 0 auto;width:95px;border-radius:18px;padding:14px;background:var(--card);border:2px dashed var(--br);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;color:var(--mu)}
 .acc-add:active{border-color:var(--pri);color:var(--pri)}
-/* PERSONAL HEADER */
 .ph{background:linear-gradient(135deg,var(--pri),#a78bfa);border-radius:16px;padding:14px 16px;margin-bottom:13px;display:flex;align-items:center;gap:12px}
 .ph-avatar{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
 .ph-info{flex:1}
@@ -149,11 +132,9 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
 .ph-total{font-size:12px;color:rgba(255,255,255,.75);margin-top:2px}
 .ph-lock{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:99px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--fb);display:inline-flex;align-items:center;gap:5px;-webkit-appearance:none}
 .ph-lock:active{opacity:.8}
-/* LOCK NOTICE */
 .lock-notice{background:var(--pri-l);border:1px solid rgba(108,99,255,.2);border-radius:13px;padding:13px 15px;margin-bottom:13px;display:flex;align-items:center;gap:11px}
 .lock-notice i{font-size:22px;color:var(--pri);flex-shrink:0}
 .lock-text{font-size:13px;color:var(--pri-d);font-weight:600;line-height:1.4}
-/* INVENTORY */
 .inv-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
 .inv-card{background:var(--card);border:1px solid var(--br);border-radius:16px;padding:13px;position:relative}
 .inv-edit-btn{position:absolute;top:9px;right:9px;font-size:14px;cursor:pointer;background:transparent;border:none;-webkit-appearance:none;opacity:.5;padding:2px}
@@ -167,11 +148,9 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
 .inv-bar{height:4px;border-radius:99px}
 .inv-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;margin-top:5px;display:inline-block}
 .inv-row{display:flex;gap:5px;margin-top:8px}
-/* Safari-safe small buttons */
 .sq-btn{width:30px;height:30px;border-radius:8px;border:1.5px solid var(--br);background:transparent;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--tx);-webkit-appearance:none;font-family:var(--fh)}
 .sq-btn:active{background:var(--pri-l);border-color:var(--pri)}
 .sq-btn.flex1{flex:1;font-size:12px;font-weight:700}
-/* NOTES */
 .note-card{border-radius:14px;padding:14px;margin-bottom:9px;border-left:4px solid}
 .note-title{font-size:14px;font-weight:700;margin-bottom:4px}
 .note-body{font-size:13px;line-height:1.55;opacity:.75}
@@ -180,18 +159,14 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
 .note-actions{display:flex;gap:10px}
 .note-act{font-size:16px;cursor:pointer;opacity:.5;background:transparent;border:none;-webkit-appearance:none;padding:3px}
 .note-act:active{opacity:1}
-/* CHIPS */
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
 .chip{padding:6px 12px;border-radius:99px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid var(--br);color:var(--mu);background:transparent;font-family:var(--fb);-webkit-appearance:none}
 .chip.active{background:var(--pri-l);border-color:var(--pri);color:var(--pri)}
 .chip:active{opacity:.7}
-/* DIVIDER */
 .divider{height:1px;background:var(--br);margin:13px 0}
-/* EMPTY */
 .empty{text-align:center;padding:28px 20px;color:var(--mu)}
 .empty i{font-size:36px;margin-bottom:8px;display:block}
 .empty p{font-size:14px;font-weight:600}
-/* OVERLAY */
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.48);z-index:500;align-items:flex-end;justify-content:center}
 .overlay.open{display:flex}
 .sheet{background:var(--card);width:100%;max-width:480px;border-radius:24px 24px 0 0;padding:16px;padding-bottom:calc(28px + var(--sb));max-height:92vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
@@ -206,23 +181,18 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
 .type-btn{flex:1;padding:11px;border-radius:12px;border:1.5px solid var(--br);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--fb);background:transparent;-webkit-appearance:none}
 .type-btn.expense{color:var(--r)}.type-btn.expense.active{background:var(--rl);border-color:var(--r)}
 .type-btn.income{color:var(--g)}.type-btn.income.active{background:var(--gl);border-color:var(--g)}
-/* Primary submit - Safari safe */
 .sbtn{width:100%;background:var(--pri);color:#fff;border:none;border-radius:14px;padding:14px;font-size:15px;font-weight:700;font-family:var(--fh);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;-webkit-appearance:none;margin-top:5px}
 .sbtn:active{opacity:.85}.sbtn:disabled{opacity:.5}
 .sbtn.green{background:var(--g)}
 .sbtn.amber{background:var(--a)}
 .cbtn{width:100%;background:transparent;color:var(--mu);border:1.5px solid var(--br);border-radius:14px;padding:11px;font-size:14px;font-weight:700;font-family:var(--fb);cursor:pointer;margin-top:8px;-webkit-appearance:none}
-/* COLOR SWATCHES */
 .swatches{display:flex;gap:9px;flex-wrap:wrap}
 .swatch{width:32px;height:32px;border-radius:50%;cursor:pointer;border:2px solid transparent;-webkit-appearance:none}
 .swatch.sel{border-color:var(--pri);transform:scale(1.12)}
-/* SPINNER */
 .spin{display:inline-block;width:17px;height:17px;border:2.5px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
-/* TOAST */
 .toast{position:fixed;bottom:calc(80px + var(--sb));left:50%;transform:translateX(-50%) translateY(10px);background:#2D2B4E;color:#fff;padding:10px 20px;border-radius:99px;font-size:13px;font-weight:600;z-index:9999;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;font-family:var(--fb)}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-/* PIN */
 .pin-modal{text-align:center}
 .pin-big{font-size:52px;margin-bottom:9px}
 .pin-nm{font-family:var(--fh);font-size:20px;font-weight:800;margin-bottom:3px}
@@ -244,14 +214,13 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
   <div class="setup-logo">🏠</div>
   <div class="setup-title">Family Manager</div>
   <div class="setup-sub">Quản lý tài chính gia đình<br>thông minh &amp; bảo mật</div>
-
   <div class="setup-card">
-    <div class="setup-card-title">🔗 Kết nối Google Sheets (thật)</div>
+    <div class="setup-card-title">🔗 Kết nối Google Sheets</div>
     <input class="gas-input" id="gas-url" type="url"
-      placeholder="https://script.google.com/macros/s/AKfycby1KnBqMV_Ki-j1RyedGiLIVgd5aPEaPz0bZLgwSWG2RylviQzv2PHIeTGqeYzMpbJR/exec"
+      placeholder="https://script.google.com/macros/s/…/exec"
       autocomplete="off" spellcheck="false">
     <div style="font-size:11px;color:var(--mu);margin-top:7px;font-weight:600">
-      Xem file SETUP.md để tạo URL từ Google Apps Script
+      Deploy GAS → New deployment → Execute as: Me → Anyone
     </div>
   </div>
   <button class="sbtn" id="btn-connect" onclick="connectGAS()">
@@ -311,25 +280,20 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
           <div class="stat-val" id="d-lowstock">—</div><div class="stat-lbl">Kho sắp hết</div>
         </div>
       </div>
-
       <div class="sec-title">⏰ Phí định kỳ sắp đến hạn</div>
       <div id="recurring-list"></div>
       <div class="sec-title" style="margin-top:4px">📦 Kho cần bổ sung</div>
       <div id="lowstock-list"></div>
       <div class="divider"></div>
-
       <div class="sec-title">
         💳 Chi phí chung
-        <button class="add-btn" onclick="openOv('add-shared')">
-          <i class="ti ti-plus"></i> Thêm
-        </button>
+        <button class="add-btn" onclick="openOv('add-shared')"><i class="ti ti-plus"></i> Thêm</button>
       </div>
       <div class="fdwrap">
         <div class="fdinner" id="fdinner"></div>
       </div>
       <div class="ddots" id="ddots"></div>
       <div class="dhint" id="dhint">👈 Vuốt trái / phải để xem thêm</div>
-
       <div class="chips" id="ov-chips" style="margin-top:10px">
         <button class="chip active" onclick="filterDeck(this,'all')">Tất cả</button>
         <button class="chip" onclick="filterDeck(this,'food')">🛒 Chợ</button>
@@ -340,7 +304,6 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
         <button class="chip" onclick="filterDeck(this,'subscription')">📱 App</button>
         <button class="chip" onclick="filterDeck(this,'other')">🏠 Khác</button>
       </div>
-
       <div class="sec-title" style="margin-top:4px">Thành viên</div>
       <div class="mrow" id="mrow-ov"></div>
     </div>
@@ -353,7 +316,6 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
       </div>
       <div class="sec-title">Chọn thành viên</div>
       <div class="mrow" id="mrow-personal"></div>
-
       <div id="personal-content" style="display:none">
         <div class="ph">
           <div class="ph-avatar" id="ph-avatar">👤</div>
@@ -361,19 +323,13 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
             <div class="ph-name" id="ph-name">—</div>
             <div class="ph-total" id="ph-total">Tổng: —</div>
           </div>
-          <button class="ph-lock" onclick="lockPersonal()">
-            <i class="ti ti-lock"></i> Khoá
-          </button>
+          <button class="ph-lock" onclick="lockPersonal()"><i class="ti ti-lock"></i> Khoá</button>
         </div>
-
         <div class="sec-title">
           Tài khoản &amp; Ví
-          <button class="add-btn purple" onclick="openOv('add-account');clearAccForm()">
-            <i class="ti ti-plus"></i> Thêm ví
-          </button>
+          <button class="add-btn purple" onclick="openOv('add-account');clearAccForm()"><i class="ti ti-plus"></i> Thêm ví</button>
         </div>
         <div class="accrow" id="acc-row"></div>
-
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:9px">
           <div class="sec-title" style="margin-bottom:0">Giao dịch</div>
           <div style="display:flex;gap:5px">
@@ -384,9 +340,7 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
         </div>
         <div class="tx-list" id="tx-list"></div>
         <div style="height:10px"></div>
-        <button class="sbtn" onclick="openOv('add-tx')">
-          <i class="ti ti-plus"></i> Thêm giao dịch
-        </button>
+        <button class="sbtn" onclick="openOv('add-tx')"><i class="ti ti-plus"></i> Thêm giao dịch</button>
       </div>
     </div>
 
@@ -409,16 +363,12 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
       </div>
       <div class="inv-grid" id="inv-grid"></div>
       <div style="height:10px"></div>
-      <button class="sbtn" onclick="openOv('add-inv');clearInvForm()" style="margin-top:8px">
-        <i class="ti ti-plus"></i> Thêm mặt hàng mới
-      </button>
+      <button class="sbtn" onclick="openOv('add-inv');clearInvForm()" style="margin-top:8px"><i class="ti ti-plus"></i> Thêm mặt hàng mới</button>
     </div>
 
     <!-- GHI CHÚ -->
     <div class="page" id="page-notes">
-      <button class="sbtn" onclick="openOv('add-note');clearNoteForm()" style="margin-bottom:13px">
-        <i class="ti ti-plus"></i> Thêm ghi chú mới
-      </button>
+      <button class="sbtn" onclick="openOv('add-note');clearNoteForm()" style="margin-bottom:13px"><i class="ti ti-plus"></i> Thêm ghi chú mới</button>
       <div id="notes-list"></div>
     </div>
 
@@ -434,8 +384,6 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
 
 <div class="toast" id="toast"></div>
 
-<!-- ── OVERLAYS ── -->
-
 <!-- PIN -->
 <div class="overlay" id="overlay-pin">
   <div class="sheet">
@@ -450,18 +398,10 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
       </div>
       <div class="pin-err" id="pin-err"></div>
       <div class="pin-pad">
-        <button class="pkey" onclick="pKey('1')">1</button>
-        <button class="pkey" onclick="pKey('2')">2</button>
-        <button class="pkey" onclick="pKey('3')">3</button>
-        <button class="pkey" onclick="pKey('4')">4</button>
-        <button class="pkey" onclick="pKey('5')">5</button>
-        <button class="pkey" onclick="pKey('6')">6</button>
-        <button class="pkey" onclick="pKey('7')">7</button>
-        <button class="pkey" onclick="pKey('8')">8</button>
-        <button class="pkey" onclick="pKey('9')">9</button>
-        <div></div>
-        <button class="pkey" onclick="pKey('0')">0</button>
-        <button class="pkey del" onclick="pDel()"><i class="ti ti-backspace"></i></button>
+        <button class="pkey" onclick="pKey('1')">1</button><button class="pkey" onclick="pKey('2')">2</button><button class="pkey" onclick="pKey('3')">3</button>
+        <button class="pkey" onclick="pKey('4')">4</button><button class="pkey" onclick="pKey('5')">5</button><button class="pkey" onclick="pKey('6')">6</button>
+        <button class="pkey" onclick="pKey('7')">7</button><button class="pkey" onclick="pKey('8')">8</button><button class="pkey" onclick="pKey('9')">9</button>
+        <div></div><button class="pkey" onclick="pKey('0')">0</button><button class="pkey del" onclick="pDel()"><i class="ti ti-backspace"></i></button>
       </div>
     </div>
     <button class="cbtn" onclick="closeOv('pin')" style="margin-top:16px">Huỷ</button>
@@ -487,18 +427,12 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
       <select class="fi" id="tx-acc"></select></div>
     <div class="fg"><label class="fl">Danh mục</label>
       <select class="fi" id="tx-cat">
-        <option value="food">🛒 Ăn uống / Chợ</option>
-        <option value="electric">⚡ Tiền điện</option>
-        <option value="water">💧 Tiền nước</option>
-        <option value="internet">🌐 Internet</option>
-        <option value="tv">📺 Truyền hình</option>
-        <option value="education">📚 Giáo dục</option>
-        <option value="transport">🚗 Di chuyển</option>
-        <option value="health">🏥 Sức khoẻ</option>
-        <option value="shopping">🛍️ Mua sắm</option>
-        <option value="salary">💼 Lương</option>
-        <option value="subscription">📱 Đăng ký dịch vụ</option>
-        <option value="other">📌 Khác</option>
+        <option value="food">🛒 Ăn uống / Chợ</option><option value="electric">⚡ Tiền điện</option>
+        <option value="water">💧 Tiền nước</option><option value="internet">🌐 Internet</option>
+        <option value="tv">📺 Truyền hình</option><option value="education">📚 Giáo dục</option>
+        <option value="transport">🚗 Di chuyển</option><option value="health">🏥 Sức khoẻ</option>
+        <option value="shopping">🛍️ Mua sắm</option><option value="salary">💼 Lương</option>
+        <option value="subscription">📱 Đăng ký dịch vụ</option><option value="other">📌 Khác</option>
       </select></div>
     <div class="fg">
       <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:600">
@@ -522,10 +456,8 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
       <input class="fi" id="acc-name" type="text" placeholder="VCB, MoMo, Tiền mặt..."></div>
     <div class="fg"><label class="fl">Loại tài khoản</label>
       <select class="fi" id="acc-type">
-        <option value="cash">💵 Tiền mặt</option>
-        <option value="bank">🏦 Ngân hàng</option>
-        <option value="ewallet">📱 Ví điện tử (MoMo, ZaloPay...)</option>
-        <option value="savings">🐷 Tiết kiệm</option>
+        <option value="cash">💵 Tiền mặt</option><option value="bank">🏦 Ngân hàng</option>
+        <option value="ewallet">📱 Ví điện tử</option><option value="savings">🐷 Tiết kiệm</option>
         <option value="invest">📈 Đầu tư</option>
       </select></div>
     <div class="fg"><label class="fl">Số dư hiện tại (VNĐ)</label>
@@ -546,12 +478,9 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
       <input class="fi" id="sh-amt" type="number" inputmode="decimal" placeholder="0" min="0"></div>
     <div class="fg"><label class="fl">Danh mục</label>
       <select class="fi" id="sh-cat">
-        <option value="electric">⚡ Tiền điện</option>
-        <option value="water">💧 Tiền nước</option>
-        <option value="food">🛒 Chợ / Siêu thị</option>
-        <option value="internet">🌐 Internet</option>
-        <option value="tv">📺 Truyền hình</option>
-        <option value="subscription">📱 YouTube/Google/Netflix</option>
+        <option value="electric">⚡ Tiền điện</option><option value="water">💧 Tiền nước</option>
+        <option value="food">🛒 Chợ / Siêu thị</option><option value="internet">🌐 Internet</option>
+        <option value="tv">📺 Truyền hình</option><option value="subscription">📱 YouTube/Google/Netflix</option>
         <option value="other">🏠 Khác</option>
       </select></div>
     <div class="fg"><label class="fl">Người chi</label>
@@ -586,10 +515,8 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
       <input class="fi" id="inv-min" type="number" inputmode="decimal" placeholder="2" min="0"></div>
     <div class="fg"><label class="fl">Danh mục</label>
       <select class="fi" id="inv-cat">
-        <option value="hygiene">🧻 Vệ sinh</option>
-        <option value="cleaning">🧴 Tẩy rửa</option>
-        <option value="kitchen">🍽️ Nhà bếp</option>
-        <option value="general">📦 Khác</option>
+        <option value="hygiene">🧻 Vệ sinh</option><option value="cleaning">🧴 Tẩy rửa</option>
+        <option value="kitchen">🍽️ Nhà bếp</option><option value="general">📦 Khác</option>
       </select></div>
     <button class="sbtn" id="inv-sbtn" onclick="submitInv()"><i class="ti ti-device-floppy"></i> Lưu mặt hàng</button>
     <button class="cbtn" onclick="closeOv('add-inv');clearInvForm()">Huỷ</button>
@@ -650,7 +577,7 @@ const CFG = { GAS_URL: '', DEMO: false };
 
 // ─── DEMO DATA ────────────────────────────────────────
 const BASE_DEMO = {
-  members: [
+  members:[
     {id:'m1',name:'Bố Minh',emoji:'👨',color:'#6C63FF',role:'parent'},
     {id:'m2',name:'Mẹ Lan', emoji:'👩',color:'#FF6EB4',role:'parent'},
     {id:'m3',name:'Bé Nam', emoji:'👦',color:'#00C896',role:'child'},
@@ -660,14 +587,14 @@ const BASE_DEMO = {
     chart:[{month:'2025-01',expense:16e6},{month:'2025-02',expense:21e6},{month:'2025-03',expense:12e6},
            {month:'2025-04',expense:19e6},{month:'2025-05',expense:18e6},{month:'2025-06',expense:18.3e6}]},
   shared:[
-    {id:'s1',description:'Tiền điện T6',    amount:850000, category:'electric',    date:'2025-06-05',paid_by:'Bố Minh',status:'paid'},
-    {id:'s2',description:'Tiền nước T6',     amount:200000, category:'water',       date:'2025-06-05',paid_by:'Mẹ Lan', status:'paid'},
-    {id:'s3',description:'Chợ tuần 1',       amount:1200000,category:'food',        date:'2025-06-03',paid_by:'Mẹ Lan', status:'paid'},
-    {id:'s4',description:'Internet VNPT',    amount:250000, category:'internet',    date:'2025-06-01',paid_by:'Bố Minh',status:'unpaid'},
-    {id:'s5',description:'YouTube Premium',  amount:79000,  category:'subscription',date:'2025-06-10',paid_by:'Bố Minh',status:'paid'},
+    {id:'s1',description:'Tiền điện T6',   amount:850000, category:'electric',    date:'2025-06-05',paid_by:'Bố Minh',status:'paid'},
+    {id:'s2',description:'Tiền nước T6',    amount:200000, category:'water',       date:'2025-06-05',paid_by:'Mẹ Lan', status:'paid'},
+    {id:'s3',description:'Chợ tuần 1',      amount:1200000,category:'food',        date:'2025-06-03',paid_by:'Mẹ Lan', status:'paid'},
+    {id:'s4',description:'Internet VNPT',   amount:250000, category:'internet',    date:'2025-06-01',paid_by:'Bố Minh',status:'unpaid'},
+    {id:'s5',description:'YouTube Premium', amount:79000,  category:'subscription',date:'2025-06-10',paid_by:'Bố Minh',status:'paid'},
     {id:'s6',description:'Truyền hình K+',  amount:180000, category:'tv',          date:'2025-06-01',paid_by:'Bố Minh',status:'unpaid'},
-    {id:'s7',description:'Google One 100GB', amount:55000,  category:'subscription',date:'2025-06-15',paid_by:'Mẹ Lan', status:'unpaid'},
-    {id:'s8',description:'Chợ tuần 2',       amount:980000, category:'food',        date:'2025-06-10',paid_by:'Mẹ Lan', status:'paid'},
+    {id:'s7',description:'Google One 100GB',amount:55000,  category:'subscription',date:'2025-06-15',paid_by:'Mẹ Lan', status:'unpaid'},
+    {id:'s8',description:'Chợ tuần 2',      amount:980000, category:'food',        date:'2025-06-10',paid_by:'Mẹ Lan', status:'paid'},
   ],
   recurring:[
     {name:'Internet VNPT', icon:'🌐',due:'2025-07-01',amount:250000},
@@ -676,17 +603,17 @@ const BASE_DEMO = {
     {name:'Google One',    icon:'☁️',due:'2025-07-15',amount:55000},
   ],
   inventory:[
-    {id:'i1',name:'Khăn giấy',       emoji:'🧻',quantity:2,  unit:'cuộn',min_qty:3,category:'hygiene'},
-    {id:'i2',name:'Nước giặt',       emoji:'🧴',quantity:1.5,unit:'lít', min_qty:2,category:'cleaning'},
-    {id:'i3',name:'Nước rửa chén',   emoji:'🍽️',quantity:3,  unit:'chai',min_qty:1,category:'kitchen'},
-    {id:'i4',name:'Xà phòng tắm',    emoji:'🧼',quantity:5,  unit:'cục', min_qty:2,category:'hygiene'},
-    {id:'i5',name:'Bàn chải đánh răng',emoji:'🪥',quantity:4,unit:'cái', min_qty:2,category:'hygiene'},
-    {id:'i6',name:'Túi rác',         emoji:'🗑️',quantity:1,  unit:'cuộn',min_qty:2,category:'general'},
+    {id:'i1',name:'Khăn giấy',         emoji:'🧻',quantity:2,  unit:'cuộn',min_qty:3,category:'hygiene'},
+    {id:'i2',name:'Nước giặt',         emoji:'🧴',quantity:1.5,unit:'lít', min_qty:2,category:'cleaning'},
+    {id:'i3',name:'Nước rửa chén',     emoji:'🍽️',quantity:3,  unit:'chai',min_qty:1,category:'kitchen'},
+    {id:'i4',name:'Xà phòng tắm',      emoji:'🧼',quantity:5,  unit:'cục', min_qty:2,category:'hygiene'},
+    {id:'i5',name:'Bàn chải đánh răng',emoji:'🪥',quantity:4,  unit:'cái', min_qty:2,category:'hygiene'},
+    {id:'i6',name:'Túi rác',           emoji:'🗑️',quantity:1,  unit:'cuộn',min_qty:2,category:'general'},
   ],
   notes:[
-    {id:'n1',title:'📋 Mua sắm tuần tới',body:'Khăn giấy (2 gói), nước giặt Omo 3kg, túi rác, dầu gội bé An.',color:'#EDE9FF',created_at:'2025-06-05'},
-    {id:'n2',title:'💡 Nhắc nhở tháng 7', body:'Học kỳ 2 bé Nam trước 15/7. Bảo hiểm xe máy bố. Sinh nhật bà nội 20/7.',color:'#E0FFF6',created_at:'2025-06-03'},
-    {id:'n3',title:'🏖️ Kế hoạch nghỉ hè',body:'Đà Nẵng 20-27/7. Ngân sách ~15tr. Đặt khách sạn trước 30/6.',color:'#FFF3E0',created_at:'2025-06-01'},
+    {id:'n1',title:'📋 Mua sắm tuần tới',  body:'Khăn giấy (2 gói), nước giặt Omo 3kg, túi rác, dầu gội bé An.',color:'#EDE9FF',created_at:'2025-06-05'},
+    {id:'n2',title:'💡 Nhắc nhở tháng 7',  body:'Học kỳ 2 bé Nam trước 15/7. Bảo hiểm xe máy bố. Sinh nhật bà nội 20/7.',color:'#E0FFF6',created_at:'2025-06-03'},
+    {id:'n3',title:'🏖️ Kế hoạch nghỉ hè', body:'Đà Nẵng 20-27/7. Ngân sách ~15tr. Đặt khách sạn trước 30/6.',color:'#FFF3E0',created_at:'2025-06-01'},
   ],
   personal:{
     m1:{accounts:[{id:'a1',name:'Tiền mặt',type:'cash',balance:5500000},{id:'a2',name:'VCB Minh',type:'bank',balance:27000000}],
@@ -698,10 +625,10 @@ const BASE_DEMO = {
         ]},
     m2:{accounts:[{id:'a3',name:'MoMo Lan',type:'ewallet',balance:3100000},{id:'a4',name:'ACB Lan',type:'savings',balance:25000000}],
         transactions:[
-          {id:'t5',date:'2025-06-02',amount:15000000,type:'income', category:'salary',  description:'Lương T6',          is_shared:false},
-          {id:'t6',date:'2025-06-03',amount:1200000, type:'expense',category:'food',    description:'Chợ tuần 1',         is_shared:true},
-          {id:'t7',date:'2025-06-04',amount:650000,  type:'expense',category:'shopping',description:'Mua quần áo',        is_shared:false},
-          {id:'t8',date:'2025-06-05',amount:320000,  type:'expense',category:'other',   description:'Đồ dùng chung',      is_shared:true},
+          {id:'t5',date:'2025-06-02',amount:15000000,type:'income', category:'salary',  description:'Lương T6',   is_shared:false},
+          {id:'t6',date:'2025-06-03',amount:1200000, type:'expense',category:'food',    description:'Chợ tuần 1', is_shared:true},
+          {id:'t7',date:'2025-06-04',amount:650000,  type:'expense',category:'shopping',description:'Mua quần áo',is_shared:false},
+          {id:'t8',date:'2025-06-05',amount:320000,  type:'expense',category:'other',   description:'Đồ dùng chung',is_shared:true},
         ]},
     m3:{accounts:[{id:'a5',name:'Heo đất Nam',type:'savings',balance:5200000}],
         transactions:[
@@ -715,7 +642,7 @@ const BASE_DEMO = {
         ]},
   }
 };
-let DD = null; // live demo copy
+let DD = null;
 
 // ─── STATE ────────────────────────────────────────────
 const S = {
@@ -731,7 +658,7 @@ function startDemo(){
   DD = JSON.parse(JSON.stringify(BASE_DEMO));
   CFG.DEMO = true;
   document.getElementById('setup').style.display = 'none';
-  document.getElementById('app').style.display = 'flex';
+  document.getElementById('app').style.display   = 'flex';
   syncAll();
 }
 function connectGAS(){
@@ -741,68 +668,81 @@ function connectGAS(){
     return;
   }
   CFG.GAS_URL = url;
-  CFG.DEMO = false;
+  CFG.DEMO    = false;
   localStorage.setItem('fm_gas_url', url);
   document.getElementById('setup').style.display = 'none';
-  document.getElementById('app').style.display = 'flex';
+  document.getElementById('app').style.display   = 'flex';
   syncAll();
 }
 
 // ─── API ──────────────────────────────────────────────
-async function api(method, p){
-  if(CFG.DEMO) return demoApi(p);
-  try{
-    let res;
-    if(method === 'GET'){
-      const qs = new URLSearchParams(p).toString();
-      res = await fetch(CFG.GAS_URL + '?' + qs);
+// Tất cả request đều dùng GET để tránh CORS preflight.
+// Với write actions: dữ liệu được JSON.stringify → btoa (base64) → gửi qua param "d".
+function toBase64(obj) {
+  // btoa không hỗ trợ unicode, dùng encodeURIComponent + unescape để xử lý tiếng Việt
+  return btoa(unescape(encodeURIComponent(JSON.stringify(obj))));
+}
+
+async function api(method, p) {
+  if (CFG.DEMO) return demoApi(p);
+
+  // Phân loại read vs write dựa vào action
+  const READ_ACTIONS = ['get_members','get_shared','get_inventory','get_notes_public',
+                        'get_dashboard','get_personal','get_accounts','verify_pin'];
+  const isRead = READ_ACTIONS.includes(p.action);
+
+  try {
+    let url;
+    if (isRead) {
+      // Read: query string thông thường
+      url = CFG.GAS_URL + '?' + new URLSearchParams(p).toString();
     } else {
-      res = await fetch(CFG.GAS_URL, {
-        method:'POST',
-        // headers:{'Content-Type':'application/json'},
-        body:JSON.stringify(p)
-      });
+      // Write: encode toàn bộ body thành base64, gửi qua param "d"
+      url = CFG.GAS_URL + '?d=' + encodeURIComponent(toBase64(p));
     }
-    if(!res.ok) throw new Error('HTTP ' + res.status);
+
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
     const d = await res.json();
-    if(!d.ok) throw new Error(d.error || 'API error');
+    if (!d.ok) throw new Error(d.error || 'API error');
     return d.data;
-  } catch(e){
+  } catch(e) {
     throw new Error('Lỗi kết nối: ' + e.message);
   }
 }
 
+// ─── DEMO API ─────────────────────────────────────────
 async function demoApi(p){
   await new Promise(r=>setTimeout(r,150));
-  const a = p.action, d = DD;
+  const a=p.action, d=DD;
   if(a==='get_dashboard')    return JSON.parse(JSON.stringify(d.dashboard));
   if(a==='get_members')      return JSON.parse(JSON.stringify(d.members));
   if(a==='get_shared')       return JSON.parse(JSON.stringify(d.shared));
   if(a==='get_inventory')    return JSON.parse(JSON.stringify(d.inventory));
   if(a==='get_notes_public') return JSON.parse(JSON.stringify(d.notes));
-  if(a==='get_recurring')    return JSON.parse(JSON.stringify(d.recurring));
-  if(a==='verify_pin')       return { valid: p.pin === '1234' };
+  if(a==='get_recurring')    return JSON.parse(JSON.stringify(d.recurring||[]));
+  if(a==='verify_pin')       return { valid: p.pin==='1234' };
   if(a==='get_personal'){
-    if(p.pin !== '1234') throw new Error('Sai PIN');
-    const pd = d.personal[p.member_id] || {accounts:[],transactions:[]};
+    if(p.pin!=='1234') throw new Error('Sai PIN');
+    const pd=d.personal[p.member_id]||{accounts:[],transactions:[]};
     return JSON.parse(JSON.stringify(pd));
   }
-  const id = 'dm_' + Date.now();
+  const id='dm_'+Date.now();
   if(a==='add_transaction'){
-    const pd = d.personal[p.member_id];
+    const pd=d.personal[p.member_id];
     if(pd) pd.transactions.unshift({id,date:p.date,amount:+p.amount,type:p.type,category:p.category,description:p.description,is_shared:!!p.is_shared});
     if(p.is_shared) d.shared.unshift({id:id+'s',description:p.description,amount:+p.amount,category:p.category,date:p.date,paid_by:S.members.find(m=>m.id===p.member_id)?.name||'?',status:'paid'});
   }
   if(a==='add_account'){ const pd=d.personal[p.member_id]; if(pd) pd.accounts.unshift({id,name:p.name,type:p.type,balance:+p.balance||0}); }
-  if(a==='update_account'){ const pd=d.personal[p.member_id]; if(pd){ const ac=pd.accounts.find(x=>x.id===p.account_id); if(ac){ac.name=p.name;ac.type=p.type;ac.balance=+p.balance;} } }
+  if(a==='update_account'){ const pd=d.personal[p.member_id]; if(pd){const ac=pd.accounts.find(x=>x.id===p.account_id);if(ac){ac.name=p.name;ac.type=p.type;ac.balance=+p.balance;}} }
   if(a==='delete_account'){ const pd=d.personal[p.member_id]; if(pd) pd.accounts=pd.accounts.filter(x=>x.id!==p.account_id); }
   if(a==='add_shared') d.shared.unshift({id,...p,status:p.status||'unpaid'});
   if(a==='add_inventory_item') d.inventory.unshift({id,name:p.name,emoji:p.emoji||'📦',quantity:+p.quantity||0,unit:p.unit,min_qty:+p.min_qty||1,category:p.category});
   if(a==='update_inventory'){ const it=d.inventory.find(x=>x.id===p.item_id); if(it){it.name=p.name;it.emoji=p.emoji;it.quantity=+p.quantity;it.unit=p.unit;it.min_qty=+p.min_qty;it.category=p.category;} }
-  if(a==='delete_inventory') d.inventory = d.inventory.filter(x=>x.id!==p.item_id);
+  if(a==='delete_inventory') d.inventory=d.inventory.filter(x=>x.id!==p.item_id);
   if(a==='add_note') d.notes.unshift({id,title:p.title,body:p.body,color:p.color||'#EDE9FF',created_at:nd()});
   if(a==='update_note'){ const n=d.notes.find(x=>x.id===p.note_id); if(n){n.title=p.title;n.body=p.body;n.color=p.color;} }
-  if(a==='delete_note') d.notes = d.notes.filter(x=>x.id!==p.note_id);
+  if(a==='delete_note') d.notes=d.notes.filter(x=>x.id!==p.note_id);
   if(a==='add_member'){
     const m={id,name:p.name,emoji:p.emoji||'👤',color:p.color||'#6C63FF',role:p.role||'member'};
     d.members.push(m); d.personal[id]={accounts:[],transactions:[]};
@@ -812,7 +752,7 @@ async function demoApi(p){
 
 // ─── HELPERS ──────────────────────────────────────────
 const fmt = n => n==null ? '—' : Number(n).toLocaleString('vi-VN')+'đ';
-const nd = () => new Date().toISOString().split('T')[0];
+const nd  = () => new Date().toISOString().split('T')[0];
 const per = d => { const[y,m]=(d||'').split('-'); return m&&y ? `Tháng ${m}/${y}` : ''; };
 
 const ICON={food:'🛒',electric:'⚡',water:'💧',internet:'🌐',tv:'📺',education:'📚',transport:'🚗',health:'🏥',shopping:'🛍️',salary:'💼',subscription:'📱',other:'📌'};
@@ -829,7 +769,7 @@ function goPage(id){
   document.querySelectorAll('.bn').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+id)?.classList.add('active');
   document.querySelector(`.bn[data-page="${id}"]`)?.classList.add('active');
-  S.curPage = id;
+  S.curPage=id;
 }
 
 // ─── OVERLAY ──────────────────────────────────────────
@@ -852,25 +792,25 @@ async function syncAll(){
   document.getElementById('sdot').className='sdot';
   document.getElementById('stext').textContent='Đang đồng bộ...';
   try{
-    const [dash,members,shared,inv,notes,recurring] = await Promise.all([
+    const [dash,members,shared,inv,notes] = await Promise.all([
       api('GET',{action:'get_dashboard'}),
       api('GET',{action:'get_members'}),
       api('GET',{action:'get_shared'}),
       api('GET',{action:'get_inventory'}),
       api('GET',{action:'get_notes_public'}),
-      api('GET',{action:'get_recurring'}),
     ]);
+    // recurring không có trong GAS, dùng array rỗng nếu không có
     S.dashboard=dash; S.members=members; S.shared=shared;
-    S.inventory=inv; S.notes=notes; S.recurring=recurring;
+    S.inventory=inv; S.notes=notes; S.recurring=[];
     renderOverview(); renderPersonalMembers(); renderInventory(); renderNotes(); fillSelects();
     document.getElementById('topbar-period').textContent = per(dash?.period);
     document.getElementById('sdot').className = 'sdot'+(CFG.DEMO?' demo':'');
     document.getElementById('stext').textContent = CFG.DEMO
       ? '🎭 Demo — PIN mọi thành viên: 1234'
-      : 'Đã đồng bộ '+new Date().toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});
+      : '✅ Đồng bộ lúc '+new Date().toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});
   } catch(e){
     document.getElementById('sdot').className='sdot err';
-    document.getElementById('stext').textContent='Lỗi: '+e.message;
+    document.getElementById('stext').textContent='❌ '+e.message;
     showToast('❌ '+e.message);
   }
 }
@@ -878,45 +818,41 @@ async function syncAll(){
 // ─── RENDER OVERVIEW ──────────────────────────────────
 function renderOverview(){
   const d=S.dashboard; if(!d) return;
-  document.getElementById('d-period').textContent = per(d.period);
-  document.getElementById('d-shared').textContent = fmt(d.total_shared);
-  document.getElementById('d-income').textContent = '+'+fmt(d.total_income);
+  document.getElementById('d-period').textContent  = per(d.period);
+  document.getElementById('d-shared').textContent  = fmt(d.total_shared);
+  document.getElementById('d-income').textContent  = '+'+fmt(d.total_income);
   document.getElementById('d-expense').textContent = '-'+fmt(d.total_expense);
   document.getElementById('d-members').textContent = d.member_count+' người';
-  const low = S.inventory.filter(i=>+i.quantity<=+i.min_qty);
+  const low=S.inventory.filter(i=>+i.quantity<=+i.min_qty);
   document.getElementById('d-lowstock').textContent = low.length+' mặt hàng';
 
-  // Bar chart
-  const max = Math.max(...(d.chart||[]).map(c=>c.expense),1);
-  document.getElementById('barchart').innerHTML = (d.chart||[]).map((c,i)=>{
-    const h=Math.round((c.expense/max)*56), last=i===d.chart.length-1, [,m]=c.month.split('-');
+  const max=Math.max(...(d.chart||[]).map(c=>c.expense),1);
+  document.getElementById('barchart').innerHTML=(d.chart||[]).map((c,i)=>{
+    const h=Math.round((c.expense/max)*56),last=i===d.chart.length-1,[,m]=c.month.split('-');
     return `<div class="bcol"><div class="bbar" style="height:${Math.max(h,4)}px;background:${last?'#6C63FF':'#C4BEFE'}"></div><div class="blbl" style="${last?'color:var(--pri);font-weight:700':''}">${'T'+parseInt(m)}</div></div>`;
   }).join('');
 
-  // Recurring alerts
-  document.getElementById('recurring-list').innerHTML = (S.recurring||[]).map(r=>{
-    const dl = Math.ceil((new Date(r.due)-new Date())/86400000);
-    const urgent=dl<=7, bg=urgent?'var(--rl)':'var(--al)', bc=urgent?'var(--r)':'var(--a)';
-    const bt = dl<=0?'Quá hạn!':dl<=7?dl+'ng nữa':r.due.slice(5);
+  document.getElementById('recurring-list').innerHTML=(S.recurring||[]).map(r=>{
+    const dl=Math.ceil((new Date(r.due)-new Date())/86400000);
+    const urgent=dl<=7,bg=urgent?'var(--rl)':'var(--al)',bc=urgent?'var(--r)':'var(--a)';
+    const bt=dl<=0?'Quá hạn!':dl<=7?dl+'ng nữa':r.due.slice(5);
     return `<div class="acard" style="border-left:3px solid ${bc}">
       <div class="aico" style="background:${bg}">${r.icon}</div>
       <div class="ainfo"><div class="aname">${r.name}</div><div class="asub">Đến hạn: ${r.due}</div></div>
       <div class="aright"><div class="aamt">${fmt(r.amount)}</div><div class="abadge" style="background:${bg};color:${bc}">${bt}</div></div>
     </div>`;
-  }).join('') || '<div class="empty" style="padding:10px 0"><p>Không có phí sắp đến hạn 🎉</p></div>';
+  }).join('')||'<div class="empty" style="padding:10px 0"><p>Không có phí sắp đến hạn 🎉</p></div>';
 
-  // Low stock
-  document.getElementById('lowstock-list').innerHTML = low.map(i=>{
-    const empty=+i.quantity<=0, bg=empty?'var(--rl)':'var(--al)', bc=empty?'var(--r)':'var(--a)';
+  document.getElementById('lowstock-list').innerHTML=low.map(i=>{
+    const empty=+i.quantity<=0,bg=empty?'var(--rl)':'var(--al)',bc=empty?'var(--r)':'var(--a)';
     return `<div class="acard" style="border-left:3px solid ${bc}">
       <div class="aico" style="background:${bg}">${i.emoji}</div>
       <div class="ainfo"><div class="aname">${i.name}</div><div class="asub">Còn ${i.quantity} ${i.unit} / tối thiểu ${i.min_qty}</div></div>
       <div class="abadge" style="background:${bg};color:${bc}">${empty?'❌ Hết':'⚠️ Sắp hết'}</div>
     </div>`;
-  }).join('') || '<div class="empty" style="padding:10px 0"><p>Kho đầy đủ 🎉</p></div>';
+  }).join('')||'<div class="empty" style="padding:10px 0"><p>Kho đầy đủ 🎉</p></div>';
 
-  // Members row
-  document.getElementById('mrow-ov').innerHTML = S.members.map(m=>`
+  document.getElementById('mrow-ov').innerHTML=S.members.map(m=>`
     <div class="mcard" onclick="goPage('personal')">
       <div class="mavatar" style="background:${m.color}22">${m.emoji}</div>
       <div class="mname">${m.name}</div>
@@ -932,31 +868,25 @@ function renderOverview(){
 }
 
 // ─── FLASHCARD DECK ───────────────────────────────────
-function filterDeck(chip, cat){
+function filterDeck(chip,cat){
   document.querySelectorAll('#ov-chips .chip').forEach(c=>c.classList.remove('active'));
-  chip.classList.add('active');
-  buildDeck(cat);
+  chip.classList.add('active'); buildDeck(cat);
 }
 function buildDeck(filter){
   S.deckFilter=filter;
-  let data = S.shared;
+  let data=S.shared;
   if(filter!=='all') data=data.filter(s=>s.category===filter);
-  S.deckData = [...data].sort((a,b)=>b.date.localeCompare(a.date));
-  S.deckIdx = 0;
-  renderDeck();
+  S.deckData=[...data].sort((a,b)=>b.date.localeCompare(a.date));
+  S.deckIdx=0; renderDeck();
 }
 function renderDeck(){
-  const inner=document.getElementById('fdinner');
-  const dotsEl=document.getElementById('ddots');
-  const hint=document.getElementById('dhint');
-  const data=S.deckData;
+  const inner=document.getElementById('fdinner'),dotsEl=document.getElementById('ddots'),hint=document.getElementById('dhint'),data=S.deckData;
   if(!data.length){
     inner.innerHTML='<div class="empty" style="padding:28px 0"><i class="ti ti-credit-card-off"></i><p>Không có chi phí chung</p></div>';
-    dotsEl.innerHTML=''; hint.style.display='none';
-    inner.parentElement.style.minHeight='auto'; return;
+    dotsEl.innerHTML=''; hint.style.display='none'; inner.parentElement.style.minHeight='auto'; return;
   }
   inner.parentElement.style.minHeight='148px';
-  hint.style.display = data.length>1 ? 'block':'none';
+  hint.style.display=data.length>1?'block':'none';
   inner.innerHTML='';
   data.forEach((s,idx)=>{
     const card=document.createElement('div');
@@ -978,10 +908,9 @@ function renderDeck(){
   dotsEl.innerHTML=data.map((_,i)=>`<button class="ddot${i===0?' active':''}" onclick="goDeck(${i})"></button>`).join('');
 }
 function posDeck(){
-  const cards=document.querySelectorAll('.fcard'), n=cards.length, ci=S.deckIdx;
+  const cards=document.querySelectorAll('.fcard'),n=cards.length,ci=S.deckIdx;
   cards.forEach((card,i)=>{
-    const rel=i-ci;
-    let tx,op,zi,pe;
+    const rel=i-ci; let tx,op,zi,pe;
     if(rel===0){tx='0%';op=1;zi=10;pe='auto';}
     else if(rel===1||(ci===n-1&&i===0)){tx='100%';op=0;zi=5;pe='none';}
     else if(rel===-1||(ci===0&&i===n-1)){tx='-100%';op=0;zi=5;pe='none';}
@@ -991,9 +920,9 @@ function posDeck(){
   });
   document.querySelectorAll('.ddot').forEach((d,i)=>d.classList.toggle('active',i===S.deckIdx));
 }
-function goDeck(i){ S.deckIdx=i; posDeck(); }
-function deckNext(){ if(!S.deckData.length)return; S.deckIdx=(S.deckIdx+1)%S.deckData.length; posDeck(); }
-function deckPrev(){ if(!S.deckData.length)return; S.deckIdx=(S.deckIdx-1+S.deckData.length)%S.deckData.length; posDeck(); }
+function goDeck(i){S.deckIdx=i;posDeck();}
+function deckNext(){if(!S.deckData.length)return;S.deckIdx=(S.deckIdx+1)%S.deckData.length;posDeck();}
+function deckPrev(){if(!S.deckData.length)return;S.deckIdx=(S.deckIdx-1+S.deckData.length)%S.deckData.length;posDeck();}
 function setupDeckSwipe(){
   const inner=document.getElementById('fdinner');
   let sx=0,drag=false,moved=false;
@@ -1006,27 +935,27 @@ function setupDeckSwipe(){
     if(ac)ac.style.transform=`translateX(${dx}px)`;
   };
   const onE=e=>{
-    if(!drag)return; drag=false;
+    if(!drag)return;drag=false;
     const dx=(e.changedTouches?e.changedTouches[0].clientX:e.clientX)-sx;
     const ac=inner.querySelector(`.fcard[data-idx="${S.deckIdx}"]`);
-    if(ac) ac.style.transform='';
+    if(ac)ac.style.transform='';
     if(!moved)return;
-    if(dx<-50) deckNext(); else if(dx>50) deckPrev();
+    if(dx<-50)deckNext();else if(dx>50)deckPrev();
   };
   ['touchstart','touchmove','touchend','mousedown','mousemove','mouseup'].forEach(ev=>{
-    inner.removeEventListener(ev, inner['_e_'+ev]);
+    inner.removeEventListener(ev,inner['_e_'+ev]);
   });
-  inner.addEventListener('touchstart', inner._e_touchstart=onS, {passive:true});
-  inner.addEventListener('touchmove',  inner._e_touchmove=onM,  {passive:true});
-  inner.addEventListener('touchend',   inner._e_touchend=onE);
-  inner.addEventListener('mousedown',  inner._e_mousedown=onS);
-  inner.addEventListener('mousemove',  inner._e_mousemove=onM);
-  inner.addEventListener('mouseup',    inner._e_mouseup=onE);
+  inner.addEventListener('touchstart',inner._e_touchstart=onS,{passive:true});
+  inner.addEventListener('touchmove', inner._e_touchmove=onM, {passive:true});
+  inner.addEventListener('touchend',  inner._e_touchend=onE);
+  inner.addEventListener('mousedown', inner._e_mousedown=onS);
+  inner.addEventListener('mousemove', inner._e_mousemove=onM);
+  inner.addEventListener('mouseup',   inner._e_mouseup=onE);
 }
 
 // ─── PERSONAL ─────────────────────────────────────────
 function renderPersonalMembers(){
-  document.getElementById('mrow-personal').innerHTML = S.members.map(m=>`
+  document.getElementById('mrow-personal').innerHTML=S.members.map(m=>`
     <div class="mcard" onclick="reqPin('${m.id}','${m.name}','${m.emoji}','${m.color}')">
       <div class="mavatar" style="background:${m.color}22">${m.emoji}</div>
       <div class="mname">${m.name}</div>
@@ -1035,30 +964,30 @@ function renderPersonalMembers(){
     </div>`).join('');
 }
 
-let pinBuf='', pinMid='';
+let pinBuf='',pinMid='';
 function reqPin(mid,name,emoji){
-  pinBuf=''; pinMid=mid;
+  pinBuf='';pinMid=mid;
   document.getElementById('pin-emoji').textContent=emoji;
   document.getElementById('pin-name').textContent=name;
   document.getElementById('pin-err').textContent='';
   updDots(); openOv('pin');
 }
-function pKey(d){ if(!d||pinBuf.length>=4)return; pinBuf+=d; updDots(); if(pinBuf.length===4)setTimeout(subPin,150); }
-function pDel(){ pinBuf=pinBuf.slice(0,-1); updDots(); }
-function updDots(){ document.querySelectorAll('.pin-dot').forEach((d,i)=>d.classList.toggle('filled',i<pinBuf.length)); }
+function pKey(d){if(!d||pinBuf.length>=4)return;pinBuf+=d;updDots();if(pinBuf.length===4)setTimeout(subPin,150);}
+function pDel(){pinBuf=pinBuf.slice(0,-1);updDots();}
+function updDots(){document.querySelectorAll('.pin-dot').forEach((d,i)=>d.classList.toggle('filled',i<pinBuf.length));}
 async function subPin(){
   document.getElementById('pin-err').textContent='';
   try{
-    const r=await api('POST',{action:'verify_pin',member_id:pinMid,pin:pinBuf});
-    if(r.valid){ closeOv('pin'); await loadPersonal(pinMid,pinBuf); }
-    else{ document.getElementById('pin-err').textContent='❌ Sai PIN, thử lại'; pinBuf=''; updDots(); }
-  }catch(e){ document.getElementById('pin-err').textContent='❌ '+e.message; pinBuf=''; updDots(); }
+    const r=await api('GET',{action:'verify_pin',member_id:pinMid,pin:pinBuf});
+    if(r.valid){closeOv('pin');await loadPersonal(pinMid,pinBuf);}
+    else{document.getElementById('pin-err').textContent='❌ Sai PIN, thử lại';pinBuf='';updDots();}
+  }catch(e){document.getElementById('pin-err').textContent='❌ '+e.message;pinBuf='';updDots();}
 }
 async function loadPersonal(mid,pin){
   showToast('🔓 Đang tải ví...');
-  const data = await api('GET',{action:'get_personal',member_id:mid,pin});
-  const m = S.members.find(x=>x.id===mid);
-  S.personal = {mid,name:m?.name||'',emoji:m?.emoji||'👤',pin,accounts:data.accounts||[],transactions:data.transactions||[]};
+  const data=await api('GET',{action:'get_personal',member_id:mid,pin});
+  const m=S.members.find(x=>x.id===mid);
+  S.personal={mid,name:m?.name||'',emoji:m?.emoji||'👤',pin,accounts:data.accounts||[],transactions:data.transactions||[]};
   renderPersonalContent();
   document.getElementById('personal-content').style.display='block';
   document.getElementById('lock-notice').style.display='none';
@@ -1081,7 +1010,7 @@ function renderPersonalContent(){
 }
 function renderAccounts(){
   const{accounts}=S.personal;
-  document.getElementById('acc-row').innerHTML = accounts.map((a,i)=>`
+  document.getElementById('acc-row').innerHTML=accounts.map((a,i)=>`
     <div class="acc-card" style="background:${ACCG[i%ACCG.length]}">
       <div class="acc-type">${ALBL[a.type]||'TÀI KHOẢN'}</div>
       <div class="acc-amt">${fmt(a.balance)}</div>
@@ -1162,7 +1091,7 @@ function renderTx(){
 
 // ─── INVENTORY ────────────────────────────────────────
 function renderInventory(){
-  const inv=S.inventory, low=inv.filter(i=>+i.quantity<=+i.min_qty);
+  const inv=S.inventory,low=inv.filter(i=>+i.quantity<=+i.min_qty);
   document.getElementById('inv-total').textContent=inv.length+' mặt hàng';
   document.getElementById('inv-ok').textContent=(inv.length-low.length)+' mặt hàng';
   document.getElementById('inv-low').textContent=low.length+' mặt hàng';
@@ -1177,9 +1106,9 @@ function renderInvGrid(){
   const el=document.getElementById('inv-grid');
   if(!data.length){el.innerHTML='<div class="empty" style="grid-column:1/-1"><i class="ti ti-package-off"></i><p>Không có mặt hàng</p></div>';return;}
   el.innerHTML=data.map(item=>{
-    const qty=+item.quantity, mn=+item.min_qty;
+    const qty=+item.quantity,mn=+item.min_qty;
     const pct=Math.min(Math.round((qty/(mn*3))*100),100);
-    const empty=qty<=0, isLow=qty<=mn&&!empty;
+    const empty=qty<=0,isLow=qty<=mn&&!empty;
     const barC=empty?'#FF6B6B':isLow?'#FF9F43':'#00C896';
     const bb=empty?'var(--rl)':isLow?'var(--al)':'var(--gl)';
     const bc=empty?'var(--rd)':isLow?'var(--ad)':'var(--gd)';
@@ -1301,7 +1230,7 @@ async function submitNote(){
   try{
     if(S.editNoteId){
       await api('POST',{action:'update_note',note_id:S.editNoteId,title,body,color:S.noteColor});
-      const n=S.notes.find(x=>x.id===S.editNoteId); if(n){n.title=title;n.body=body;n.color=S.noteColor;}
+      const n=S.notes.find(x=>x.id===S.editNoteId);if(n){n.title=title;n.body=body;n.color=S.noteColor;}
       showToast('✅ Đã cập nhật');
     } else {
       const r=await api('POST',{action:'add_note',title,body,color:S.noteColor});
@@ -1402,7 +1331,6 @@ function fillSelects(){
 // ─── INIT ─────────────────────────────────────────────
 document.getElementById('tx-date').value=nd();
 document.getElementById('sh-date').value=nd();
-// Restore saved URL
 const savedUrl=localStorage.getItem('fm_gas_url');
 if(savedUrl) document.getElementById('gas-url').value=savedUrl;
 </script>
