@@ -205,6 +205,14 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
 .pkey:active{background:var(--pri-l);border-color:var(--pri);color:var(--pri)}
 .pkey.del{font-size:18px;color:var(--mu)}
 .pin-err{color:var(--r);font-size:13px;font-weight:700;min-height:18px;margin-top:8px}
+.emoji-picker{display:flex;flex-wrap:wrap;gap:5px;padding:9px;background:var(--bg);border:1.5px solid var(--br);border-radius:12px;max-height:130px;overflow-y:auto;-webkit-overflow-scrolling:touch;margin-top:5px}
+.emoji-picker::-webkit-scrollbar{display:none}
+.epick{font-size:22px;width:38px;height:38px;border-radius:9px;border:1.5px solid transparent;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-appearance:none;flex-shrink:0}
+.epick:active,.epick.sel{background:var(--pri-l);border-color:var(--pri)}
+.fi-with-pick{display:flex;gap:7px;align-items:center}
+.fi-with-pick .fi{flex:1}
+.epick-trigger{width:48px;height:48px;font-size:24px;border-radius:12px;border:1.5px solid var(--br);background:var(--bg);cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-appearance:none;flex-shrink:0}
+.epick-trigger:active{background:var(--pri-l);border-color:var(--pri)}
 </style>
 </head>
 <body>
@@ -324,6 +332,7 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
             <div class="ph-total" id="ph-total">Tổng: —</div>
           </div>
           <button class="ph-lock" onclick="lockPersonal()"><i class="ti ti-lock"></i> Khoá</button>
+          <button class="ph-lock" onclick="openChangePin()" style="background:rgba(255,255,255,.15);margin-left:5px"><i class="ti ti-key"></i> Đổi PIN</button>
         </div>
         <div class="sec-title">
           Tài khoản &amp; Ví
@@ -504,7 +513,12 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
     <div class="sh-title" id="inv-sh-title">📦 Thêm mặt hàng kho</div>
     <input type="hidden" id="edit-inv-id">
     <div class="fg"><label class="fl">Emoji</label>
-      <input class="fi" id="inv-emoji" type="text" placeholder="🧻" maxlength="2"></div>
+      <div class="fi-with-pick">
+        <input class="fi" id="inv-emoji" type="text" placeholder="🧻" maxlength="2" oninput="syncEmojiBtn('inv')">
+        <button class="epick-trigger" id="inv-epick-btn" onclick="toggleEmojiPicker('inv')">📦</button>
+      </div>
+      <div class="emoji-picker" id="inv-emoji-picker" style="display:none" data-target="inv"></div>
+    </div>
     <div class="fg"><label class="fl">Tên mặt hàng</label>
       <input class="fi" id="inv-name" type="text" placeholder="Khăn giấy..."></div>
     <div class="fg"><label class="fl">Số lượng</label>
@@ -555,7 +569,12 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
     <div class="fg"><label class="fl">Tên thành viên</label>
       <input class="fi" id="mem-name" type="text" placeholder="Bố Minh..."></div>
     <div class="fg"><label class="fl">Emoji đại diện</label>
-      <input class="fi" id="mem-emoji" type="text" placeholder="👨" maxlength="2"></div>
+      <div class="fi-with-pick">
+        <input class="fi" id="mem-emoji" type="text" placeholder="👨" maxlength="2" oninput="syncEmojiBtn('mem')">
+        <button class="epick-trigger" id="mem-epick-btn" onclick="toggleEmojiPicker('mem')">👤</button>
+      </div>
+      <div class="emoji-picker" id="mem-emoji-picker" style="display:none" data-target="mem"></div>
+    </div>
     <div class="fg"><label class="fl">Vai trò</label>
       <select class="fi" id="mem-role">
         <option value="parent">Bố / Mẹ</option>
@@ -568,6 +587,27 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
       <input class="fi" id="mem-color" type="color" value="#6C63FF" style="height:48px;padding:4px 8px"></div>
     <button class="sbtn" onclick="submitMember()"><i class="ti ti-device-floppy"></i> Tạo thành viên</button>
     <button class="cbtn" onclick="closeOv('add-member')">Huỷ</button>
+  </div>
+</div>
+
+<!-- CHANGE PIN -->
+<div class="overlay" id="overlay-change-pin">
+  <div class="sheet">
+    <div class="handle"></div>
+    <div class="sh-title">🔑 Đổi mã PIN</div>
+    <div style="text-align:center;margin-bottom:16px">
+      <div style="font-size:36px" id="cpn-emoji">👤</div>
+      <div style="font-family:var(--fh);font-size:16px;font-weight:800;margin-top:4px" id="cpn-name">—</div>
+    </div>
+    <div class="fg"><label class="fl">PIN hiện tại</label>
+      <input class="fi" id="cpn-old" type="password" placeholder="••••" maxlength="4" inputmode="numeric"></div>
+    <div class="fg"><label class="fl">PIN mới</label>
+      <input class="fi" id="cpn-new" type="password" placeholder="••••" maxlength="4" inputmode="numeric"></div>
+    <div class="fg"><label class="fl">Xác nhận PIN mới</label>
+      <input class="fi" id="cpn-confirm" type="password" placeholder="••••" maxlength="4" inputmode="numeric"></div>
+    <div class="pin-err" id="cpn-err" style="text-align:center;margin-bottom:10px"></div>
+    <button class="sbtn" id="cpn-sbtn" onclick="submitChangePin()"><i class="ti ti-key"></i> Xác nhận đổi PIN</button>
+    <button class="cbtn" onclick="closeOv('change-pin')">Huỷ</button>
   </div>
 </div>
 
@@ -722,6 +762,11 @@ async function demoApi(p){
   if(a==='get_notes_public') return JSON.parse(JSON.stringify(d.notes));
   if(a==='get_recurring')    return JSON.parse(JSON.stringify(d.recurring||[]));
   if(a==='verify_pin')       return { valid: p.pin==='1234' };
+  if(a==='change_pin'){
+    if(p.pin!=='1234') throw new Error('PIN hiện tại không đúng');
+    // Demo mode: chấp nhận đổi nhưng không lưu thực sự
+    return { changed: true };
+  }
   if(a==='get_personal'){
     if(p.pin!=='1234') throw new Error('Sai PIN');
     const pd=d.personal[p.member_id]||{accounts:[],transactions:[]};
@@ -1141,6 +1186,7 @@ function editInv(id){
   document.getElementById('inv-sh-title').textContent='✏️ Chỉnh sửa mặt hàng';
   document.getElementById('edit-inv-id').value=id;
   document.getElementById('inv-emoji').value=it.emoji;
+  document.getElementById('inv-epick-btn').textContent=it.emoji||'📦';
   document.getElementById('inv-name').value=it.name;
   document.getElementById('inv-qty').value=it.quantity;
   document.getElementById('inv-unit').value=it.unit;
@@ -1155,6 +1201,8 @@ function clearInvForm(){
   ['edit-inv-id','inv-emoji','inv-name','inv-qty','inv-unit','inv-min'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('inv-cat').value='hygiene';
   document.getElementById('inv-sbtn').innerHTML='<i class="ti ti-device-floppy"></i> Lưu mặt hàng';
+  document.getElementById('inv-epick-btn').textContent='📦';
+  document.getElementById('inv-emoji-picker').style.display='none';
 }
 async function submitInv(){
   const name=document.getElementById('inv-name').value.trim();
@@ -1303,6 +1351,74 @@ async function submitMember(){
   renderPersonalMembers(); renderOverview();
   closeOv('add-member'); showToast('✅ Đã thêm '+name);
   document.getElementById('mem-name').value=''; document.getElementById('mem-pin').value='';
+}
+
+// ─── EMOJI PICKER ─────────────────────────────────────
+const EMOJI_MEMBERS=['👨','👩','👦','👧','🧑','👴','👵','👶','🧒','🙎','🙍','💁','🙋','🧑‍💼','👨‍💼','👩‍💼','🧑‍🍳','👨‍🍳','👩‍🍳','🧑‍🎓','🧕','👲','🧔','🐣','😊','😄','😎','🥰','😍','🤩','🙃','😴','🤓','😇','🦸','🦹','🧛','🧜','🧝','🐱','🐶','🦊','🐻','🐼','🦁','🐯','🐧'];
+const EMOJI_INV=['🧻','🧴','🧼','🪥','🧽','🧹','🧺','🧷','🛁','🚿','🪒','💊','🩺','🩹','🌡️','🍽️','🥄','🍴','🫙','🍶','🥢','🧂','🫒','🧃','🥛','🍵','☕','🫖','🥤','🍺','🛒','🛍️','📦','🎁','🔋','💡','🔦','🕯️','🪣','🪤','🔧','🔨','🪛','🧰','🪜','🗑️','🪟','🚪','🛏️','🪑','🛋️','🪴','🌿','🍃','🌱','🌻','🌼','🌸','❄️','🔑','🗝️','🏷️','📋','📌','✂️','📎'];
+
+function initEmojiPicker(scope, emojis) {
+  const el = document.getElementById(scope+'-emoji-picker');
+  if (!el || el.dataset.init) return;
+  el.dataset.init = '1';
+  el.innerHTML = emojis.map(e =>
+    `<button class="epick" onclick="pickEmoji('${scope}','${e}')">${e}</button>`
+  ).join('');
+}
+
+function toggleEmojiPicker(scope) {
+  const emojis = scope==='mem' ? EMOJI_MEMBERS : EMOJI_INV;
+  initEmojiPicker(scope, emojis);
+  const el = document.getElementById(scope+'-emoji-picker');
+  const isOpen = el.style.display !== 'none';
+  el.style.display = isOpen ? 'none' : 'flex';
+}
+
+function pickEmoji(scope, emoji) {
+  document.getElementById(scope+'-emoji').value = emoji;
+  document.getElementById(scope+'-epick-btn').textContent = emoji;
+  document.querySelectorAll('#'+scope+'-emoji-picker .epick').forEach(b=>b.classList.toggle('sel', b.textContent===emoji));
+  document.getElementById(scope+'-emoji-picker').style.display = 'none';
+}
+
+function syncEmojiBtn(scope) {
+  const v = document.getElementById(scope+'-emoji').value.trim();
+  if(v) document.getElementById(scope+'-epick-btn').textContent = v;
+}
+
+// ─── CHANGE PIN ───────────────────────────────────────
+function openChangePin(){
+  if(!S.personal.mid){showToast('❗ Chưa mở ví');return;}
+  document.getElementById('cpn-emoji').textContent = S.personal.emoji;
+  document.getElementById('cpn-name').textContent  = S.personal.name;
+  document.getElementById('cpn-old').value='';
+  document.getElementById('cpn-new').value='';
+  document.getElementById('cpn-confirm').value='';
+  document.getElementById('cpn-err').textContent='';
+  openOv('change-pin');
+}
+async function submitChangePin(){
+  const oldPin = document.getElementById('cpn-old').value;
+  const newPin = document.getElementById('cpn-new').value;
+  const confirm2 = document.getElementById('cpn-confirm').value;
+  const errEl = document.getElementById('cpn-err');
+  errEl.textContent='';
+  if(oldPin.length!==4||newPin.length!==4||confirm2.length!==4){errEl.textContent='❗ Tất cả PIN phải đủ 4 số';return;}
+  if(newPin!==confirm2){errEl.textContent='❌ PIN mới và xác nhận không khớp';return;}
+  if(newPin===oldPin){errEl.textContent='❗ PIN mới phải khác PIN cũ';return;}
+  const btn=document.getElementById('cpn-sbtn');
+  btn.disabled=true; btn.innerHTML='<div class="spin"></div> Đang xử lý...';
+  try{
+    // Xác minh PIN cũ trước
+    const vr = await api('GET',{action:'verify_pin',member_id:S.personal.mid,pin:oldPin});
+    if(!vr.valid){errEl.textContent='❌ PIN hiện tại không đúng';pinBuf='';return;}
+    // Đổi PIN
+    await api('POST',{action:'change_pin',member_id:S.personal.mid,pin:oldPin,new_pin:newPin});
+    S.personal.pin = newPin;
+    closeOv('change-pin');
+    showToast('✅ Đã đổi PIN thành công!');
+  }catch(e){errEl.textContent='❌ '+e.message;}
+  finally{btn.disabled=false;btn.innerHTML='<i class="ti ti-key"></i> Xác nhận đổi PIN';}
 }
 
 // ─── FILL SELECTS ─────────────────────────────────────
