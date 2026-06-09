@@ -76,7 +76,7 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
 .mname{font-size:12px;font-weight:700;margin-bottom:2px}
 .mrole{font-size:10px;color:var(--mu);font-weight:600;margin-bottom:5px}
 .mlock{font-size:10px;color:var(--mu);display:flex;align-items:center;gap:3px}
-.tx-list{display:flex;flex-direction:column;gap:0}
+.tx-list{display:flex;flex-direction:column;gap:7px}
 .tx-item{background:var(--card);border:1px solid var(--br);border-radius:15px;padding:11px 13px;display:flex;align-items:center;gap:11px}
 .tx-ico{width:37px;height:37px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
 .tx-info{flex:1;min-width:0}
@@ -84,12 +84,6 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
 .tx-meta{font-size:11px;color:var(--mu);font-weight:500;margin-top:2px;display:flex;align-items:center;gap:4px;flex-wrap:wrap}
 .tx-amt{font-family:var(--fh);font-size:14px;font-weight:800;white-space:nowrap}
 .tx-amt.in{color:var(--g)}.tx-amt.out{color:var(--r)}
-.tx-wrap{position:relative;overflow:hidden;border-radius:15px;margin-bottom:7px}
-.tx-actions{position:absolute;right:0;top:0;bottom:0;display:flex}
-.tx-act-btn{width:62px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10px;font-weight:700;cursor:pointer;border:none;-webkit-appearance:none;color:#fff}
-.tx-act-btn.edit{background:var(--bl)}.tx-act-btn.del{background:var(--r)}
-.tx-act-btn i{font-size:18px}
-.tx-item{position:relative;background:var(--card);border:1px solid var(--br);border-radius:15px;padding:11px 13px;display:flex;align-items:center;gap:11px;transition:transform .22s ease;will-change:transform;margin-bottom:0;cursor:grab}
 .tag{display:inline-flex;align-items:center;padding:2px 7px;border-radius:99px;font-size:10px;font-weight:700;background:var(--pri-l);color:var(--pri)}
 .fdwrap{margin-bottom:14px}
 .fdinner{position:relative;width:100%;height:148px;touch-action:pan-y}
@@ -346,7 +340,7 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
         </div>
         <div class="tx-list" id="tx-list"></div>
         <div style="height:10px"></div>
-        <button class="sbtn" onclick="clearTxForm();openOv('add-tx')"><i class="ti ti-plus"></i> Thêm giao dịch</button>
+        <button class="sbtn" onclick="openOv('add-tx')"><i class="ti ti-plus"></i> Thêm giao dịch</button>
       </div>
     </div>
 
@@ -418,11 +412,10 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
 <div class="overlay" id="overlay-add-tx">
   <div class="sheet">
     <div class="handle"></div>
-    <div class="sh-title" id="tx-sh-title">➕ Thêm giao dịch</div>
-    <input type="hidden" id="edit-tx-id">
+    <div class="sh-title">➕ Thêm giao dịch</div>
     <div class="type-toggle">
-      <button class="type-btn expense active" id="tx-btn-expense" onclick="setTxType(this,'expense')">💸 Chi tiêu</button>
-      <button class="type-btn income"         id="tx-btn-income"  onclick="setTxType(this,'income')">💰 Thu nhập</button>
+      <button class="type-btn expense active" onclick="setTxType(this,'expense')">💸 Chi tiêu</button>
+      <button class="type-btn income"         onclick="setTxType(this,'income')">💰 Thu nhập</button>
     </div>
     <div class="fg"><label class="fl">Số tiền (VNĐ)</label>
       <input class="fi" id="tx-amt" type="number" inputmode="decimal" placeholder="0" min="0" style="font-size:22px;font-weight:700"></div>
@@ -441,7 +434,7 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
         <option value="shopping">🛍️ Mua sắm</option><option value="salary">💼 Lương</option>
         <option value="subscription">📱 Đăng ký dịch vụ</option><option value="other">📌 Khác</option>
       </select></div>
-    <div class="fg" id="tx-shared-wrap">
+    <div class="fg">
       <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:600">
         <input type="checkbox" id="tx-shared" style="width:17px;height:17px;accent-color:var(--pri)">
         Phân loại <strong>Chi phí Chung gia đình</strong>
@@ -449,7 +442,7 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
       <div style="font-size:11px;color:var(--mu);margin-top:5px;margin-left:25px">Bật → hiện ở Tổng quan. Số dư ví vẫn ẩn.</div>
     </div>
     <button class="sbtn" id="tx-sbtn" onclick="submitTx()"><i class="ti ti-device-floppy"></i> Lưu &amp; Đồng bộ</button>
-    <button class="cbtn" onclick="closeTxForm()">Huỷ</button>
+    <button class="cbtn" onclick="closeOv('add-tx')">Huỷ</button>
   </div>
 </div>
 
@@ -737,18 +730,8 @@ async function demoApi(p){
   const id='dm_'+Date.now();
   if(a==='add_transaction'){
     const pd=d.personal[p.member_id];
-    if(pd) pd.transactions.unshift({id,date:p.date,amount:+p.amount,type:p.type,category:p.category,description:p.description,is_shared:!!p.is_shared,account_id:p.account_id});
+    if(pd) pd.transactions.unshift({id,date:p.date,amount:+p.amount,type:p.type,category:p.category,description:p.description,is_shared:!!p.is_shared});
     if(p.is_shared) d.shared.unshift({id:id+'s',description:p.description,amount:+p.amount,category:p.category,date:p.date,paid_by:S.members.find(m=>m.id===p.member_id)?.name||'?',status:'paid'});
-  }
-  if(a==='update_transaction'){
-    const pd=d.personal[p.member_id];
-    if(pd){const t=pd.transactions.find(x=>x.id===p.tx_id);if(t){t.amount=+p.amount;t.type=p.type;t.category=p.category;t.description=p.description;t.date=p.date;t.account_id=p.account_id;}}
-    return {updated:true};
-  }
-  if(a==='delete_transaction'){
-    const pd=d.personal[p.member_id];
-    if(pd) pd.transactions=pd.transactions.filter(x=>x.id!==p.tx_id);
-    return {deleted:true};
   }
   if(a==='add_account'){ const pd=d.personal[p.member_id]; if(pd) pd.accounts.unshift({id,name:p.name,type:p.type,balance:+p.balance||0}); }
   if(a==='update_account'){ const pd=d.personal[p.member_id]; if(pd){const ac=pd.accounts.find(x=>x.id===p.account_id);if(ac){ac.name=p.name;ac.type=p.type;ac.balance=+p.balance;}} }
@@ -1096,66 +1079,14 @@ function renderTx(){
   const el=document.getElementById('tx-list');
   if(!txs.length){el.innerHTML='<div class="empty"><i class="ti ti-receipt-off"></i><p>Không có giao dịch</p></div>';return;}
   el.innerHTML=txs.map(t=>`
-    <div class="tx-wrap" id="txw-${t.id}">
-      <div class="tx-actions">
-        <button class="tx-act-btn edit" onclick="editTx('${t.id}')"><i class="ti ti-pencil"></i>Sửa</button>
-        <button class="tx-act-btn del"  onclick="delTx('${t.id}','${(t.description||'').replace(/'/g,'')}')"><i class="ti ti-trash"></i>Xoá</button>
+    <div class="tx-item">
+      <div class="tx-ico" style="background:${BG[t.category]};color:${COL[t.category]}">${ICON[t.category]||'📌'}</div>
+      <div class="tx-info">
+        <div class="tx-name">${t.description}</div>
+        <div class="tx-meta">${t.date} · ${t.category}${(t.is_shared===true||t.is_shared==='TRUE')?' <span class="tag">👥 Chung</span>':''}</div>
       </div>
-      <div class="tx-item" id="txi-${t.id}" data-txid="${t.id}">
-        <div class="tx-ico" style="background:${BG[t.category]};color:${COL[t.category]}">${ICON[t.category]||'📌'}</div>
-        <div class="tx-info">
-          <div class="tx-name">${t.description}</div>
-          <div class="tx-meta">${t.date} · ${t.category}${(t.is_shared===true||t.is_shared==='TRUE')?' <span class="tag">👥 Chung</span>':''}</div>
-        </div>
-        <div class="tx-amt ${t.type==='income'?'in':'out'}">${t.type==='income'?'+':'-'}${fmt(t.amount)}</div>
-      </div>
+      <div class="tx-amt ${t.type==='income'?'in':'out'}">${t.type==='income'?'+':'-'}${fmt(t.amount)}</div>
     </div>`).join('');
-  initTxSwipe();
-}
-
-const SWIPE_W = 124; // 2 buttons × 62px
-let _activeTxWrap = null;
-
-function closeTxSwipe() {
-  if (_activeTxWrap) {
-    const item = _activeTxWrap.querySelector('.tx-item');
-    if (item) item.style.transform = '';
-    _activeTxWrap = null;
-  }
-}
-
-function initTxSwipe() {
-  document.querySelectorAll('.tx-item').forEach(item => {
-    let sx = 0, moved = false, dragging = false, cur = 0;
-    item.addEventListener('touchstart', e => {
-      sx = e.touches[0].clientX; moved = false; dragging = true;
-      cur = _activeTxWrap === item.closest('.tx-wrap') ? -SWIPE_W : 0;
-    }, { passive: true });
-    item.addEventListener('touchmove', e => {
-      if (!dragging) return;
-      const dx = e.touches[0].clientX - sx;
-      if (Math.abs(dx) > 6) moved = true;
-      const next = Math.min(0, Math.max(-SWIPE_W, cur + dx));
-      item.style.transform = `translateX(${next}px)`;
-    }, { passive: true });
-    item.addEventListener('touchend', e => {
-      if (!dragging) return; dragging = false;
-      const dx = e.changedTouches[0].clientX - sx;
-      const wrap = item.closest('.tx-wrap');
-      if (dx < -40) {
-        if (_activeTxWrap && _activeTxWrap !== wrap) closeTxSwipe();
-        item.style.transform = `translateX(-${SWIPE_W}px)`;
-        _activeTxWrap = wrap;
-      } else if (dx > 20 || !moved) {
-        item.style.transform = '';
-        if (_activeTxWrap === wrap) _activeTxWrap = null;
-      }
-    });
-  });
-  // Tap elsewhere closes open swipe
-  document.getElementById('tx-list').addEventListener('touchstart', e => {
-    if (_activeTxWrap && !_activeTxWrap.contains(e.target)) closeTxSwipe();
-  }, { passive: true });
 }
 
 // ─── INVENTORY ────────────────────────────────────────
@@ -1317,59 +1248,7 @@ async function delNote(id){
 
 // ─── TRANSACTIONS ─────────────────────────────────────
 let txType='expense';
-let editTxId=null;
 function setTxType(btn,t){txType=t;document.querySelectorAll('.type-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
-
-function clearTxForm(){
-  editTxId=null;
-  document.getElementById('edit-tx-id').value='';
-  document.getElementById('tx-sh-title').textContent='➕ Thêm giao dịch';
-  document.getElementById('tx-amt').value='';
-  document.getElementById('tx-desc').value='';
-  document.getElementById('tx-date').value=nd();
-  document.getElementById('tx-shared').checked=false;
-  document.getElementById('tx-shared-wrap').style.display='';
-  document.getElementById('tx-sbtn').innerHTML='<i class="ti ti-device-floppy"></i> Lưu &amp; Đồng bộ';
-  setTxType(document.getElementById('tx-btn-expense'),'expense');
-}
-function closeTxForm(){clearTxForm();closeOv('add-tx');}
-
-function editTx(id){
-  closeTxSwipe();
-  const t=S.personal.transactions.find(x=>x.id===id); if(!t)return;
-  editTxId=id;
-  document.getElementById('edit-tx-id').value=id;
-  document.getElementById('tx-sh-title').textContent='✏️ Sửa giao dịch';
-  document.getElementById('tx-amt').value=t.amount;
-  document.getElementById('tx-desc').value=t.description;
-  document.getElementById('tx-date').value=t.date;
-  document.getElementById('tx-acc').value=t.account_id||'';
-  document.getElementById('tx-cat').value=t.category||'other';
-  document.getElementById('tx-shared').checked=!!(t.is_shared===true||t.is_shared==='TRUE');
-  document.getElementById('tx-sbtn').innerHTML='<i class="ti ti-device-floppy"></i> Cập nhật';
-  // Khi sửa ẩn checkbox chung (không thay đổi trạng thái shared khi edit)
-  document.getElementById('tx-shared-wrap').style.display='none';
-  const typeBtn = t.type==='income'?document.getElementById('tx-btn-income'):document.getElementById('tx-btn-expense');
-  setTxType(typeBtn, t.type);
-  openOv('add-tx');
-}
-
-async function delTx(id,desc){
-  closeTxSwipe();
-  if(!confirm(`Xoá giao dịch "${desc}"?`))return;
-  try{
-    await api('POST',{action:'delete_transaction',member_id:S.personal.mid,tx_id:id,pin:S.personal.pin});
-    const t=S.personal.transactions.find(x=>x.id===id);
-    if(t){
-      const acc=S.personal.accounts.find(a=>a.id===t.account_id);
-      if(acc) acc.balance=(+acc.balance)+(t.type==='income'?-t.amount:+t.amount);
-    }
-    S.personal.transactions=S.personal.transactions.filter(x=>x.id!==id);
-    renderPersonalContent();
-    showToast('🗑️ Đã xoá giao dịch');
-  }catch(e){showToast('❌ '+e.message);}
-}
-
 async function submitTx(){
   if(!S.personal.mid){showToast('❗ Vui lòng mở khoá ví (nhập PIN)');return;}
   const amount=parseFloat(document.getElementById('tx-amt').value);
@@ -1382,32 +1261,20 @@ async function submitTx(){
   const btn=document.getElementById('tx-sbtn');
   btn.disabled=true; btn.innerHTML='<div class="spin"></div> Đang lưu...';
   try{
-    if(editTxId){
-      // ── UPDATE ──
-      const old=S.personal.transactions.find(x=>x.id===editTxId);
-      await api('POST',{action:'update_transaction',member_id:S.personal.mid,tx_id:editTxId,account_id:accountId,date,amount,type:txType,category,description:desc,pin:S.personal.pin});
-      // Hoàn số dư cũ rồi áp số dư mới
-      const acc=S.personal.accounts.find(a=>a.id===accountId);
-      if(acc&&old){
-        acc.balance=(+acc.balance)+(old.type==='income'?-old.amount:+old.amount);
-        acc.balance=(+acc.balance)+(txType==='income'?amount:-amount);
-      }
-      if(old){old.amount=amount;old.type=txType;old.category=category;old.description=desc;old.date=date;old.account_id=accountId;}
-      showToast('✅ Đã cập nhật giao dịch');
-    } else {
-      // ── ADD ──
-      const r=await api('POST',{action:'add_transaction',member_id:S.personal.mid,account_id:accountId,date,amount,type:txType,category,description:desc,is_shared:isShared,pin:S.personal.pin});
-      S.personal.transactions.unshift({id:r.id,date,amount,type:txType,category,description:desc,is_shared:isShared,account_id:accountId});
-      if(isShared) S.shared.unshift({id:r.id+'s',description:desc,amount,category,date,paid_by:S.personal.name,status:'paid'});
-      const acc=S.personal.accounts.find(a=>a.id===accountId);
-      if(acc) acc.balance=(+acc.balance)+(txType==='income'?amount:-amount);
-      showToast('✅ Đã lưu'+(isShared?' (hiện ở Tổng quan)':''));
-    }
+    const r=await api('POST',{action:'add_transaction',member_id:S.personal.mid,account_id:accountId,date,amount,type:txType,category,description:desc,is_shared:isShared,pin:S.personal.pin});
+    S.personal.transactions.unshift({id:r.id,date,amount,type:txType,category,description:desc,is_shared:isShared});
+    if(isShared) S.shared.unshift({id:r.id+'s',description:desc,amount,category,date,paid_by:S.personal.name,status:'paid'});
+    const acc=S.personal.accounts.find(a=>a.id===accountId);
+    if(acc) acc.balance=(+acc.balance)+(txType==='income'?amount:-amount);
     renderPersonalContent();
     if(S.curPage==='overview') buildDeck(S.deckFilter);
-    closeTxForm();
+    closeOv('add-tx');
+    showToast('✅ Đã lưu'+(isShared?' (hiện ở Tổng quan)':''));
+    document.getElementById('tx-amt').value='';
+    document.getElementById('tx-desc').value='';
+    document.getElementById('tx-shared').checked=false;
   }catch(e){showToast('❌ '+e.message);}
-  finally{btn.disabled=false;btn.innerHTML=editTxId?'<i class="ti ti-device-floppy"></i> Cập nhật':'<i class="ti ti-device-floppy"></i> Lưu &amp; Đồng bộ';}
+  finally{btn.disabled=false;btn.innerHTML='<i class="ti ti-device-floppy"></i> Lưu &amp; Đồng bộ';}
 }
 async function submitShared(){
   const desc=document.getElementById('sh-desc').value.trim();
