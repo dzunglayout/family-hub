@@ -76,7 +76,7 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
 .mname{font-size:12px;font-weight:700;margin-bottom:2px}
 .mrole{font-size:10px;color:var(--mu);font-weight:600;margin-bottom:5px}
 .mlock{font-size:10px;color:var(--mu);display:flex;align-items:center;gap:3px}
-.tx-list{display:flex;flex-direction:column;gap:7px}
+.tx-list{display:flex;flex-direction:column;gap:0}
 .tx-item{background:var(--card);border:1px solid var(--br);border-radius:15px;padding:11px 13px;display:flex;align-items:center;gap:11px}
 .tx-ico{width:37px;height:37px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
 .tx-info{flex:1;min-width:0}
@@ -84,6 +84,12 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
 .tx-meta{font-size:11px;color:var(--mu);font-weight:500;margin-top:2px;display:flex;align-items:center;gap:4px;flex-wrap:wrap}
 .tx-amt{font-family:var(--fh);font-size:14px;font-weight:800;white-space:nowrap}
 .tx-amt.in{color:var(--g)}.tx-amt.out{color:var(--r)}
+.tx-wrap{position:relative;overflow:hidden;border-radius:15px;margin-bottom:7px}
+.tx-actions{position:absolute;right:0;top:0;bottom:0;display:flex}
+.tx-act-btn{width:62px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10px;font-weight:700;cursor:pointer;border:none;-webkit-appearance:none;color:#fff}
+.tx-act-btn.edit{background:var(--bl)}.tx-act-btn.del{background:var(--r)}
+.tx-act-btn i{font-size:18px}
+.tx-item{position:relative;background:var(--card);border:1px solid var(--br);border-radius:15px;padding:11px 13px;display:flex;align-items:center;gap:11px;transition:transform .22s ease;will-change:transform;margin-bottom:0;cursor:grab}
 .tag{display:inline-flex;align-items:center;padding:2px 7px;border-radius:99px;font-size:10px;font-weight:700;background:var(--pri-l);color:var(--pri)}
 .fdwrap{margin-bottom:14px}
 .fdinner{position:relative;width:100%;height:148px;touch-action:pan-y}
@@ -205,14 +211,6 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
 .pkey:active{background:var(--pri-l);border-color:var(--pri);color:var(--pri)}
 .pkey.del{font-size:18px;color:var(--mu)}
 .pin-err{color:var(--r);font-size:13px;font-weight:700;min-height:18px;margin-top:8px}
-.emoji-picker{display:flex;flex-wrap:wrap;gap:5px;padding:9px;background:var(--bg);border:1.5px solid var(--br);border-radius:12px;max-height:130px;overflow-y:auto;-webkit-overflow-scrolling:touch;margin-top:5px}
-.emoji-picker::-webkit-scrollbar{display:none}
-.epick{font-size:22px;width:38px;height:38px;border-radius:9px;border:1.5px solid transparent;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-appearance:none;flex-shrink:0}
-.epick:active,.epick.sel{background:var(--pri-l);border-color:var(--pri)}
-.fi-with-pick{display:flex;gap:7px;align-items:center}
-.fi-with-pick .fi{flex:1}
-.epick-trigger{width:48px;height:48px;font-size:24px;border-radius:12px;border:1.5px solid var(--br);background:var(--bg);cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-appearance:none;flex-shrink:0}
-.epick-trigger:active{background:var(--pri-l);border-color:var(--pri)}
 </style>
 </head>
 <body>
@@ -332,7 +330,6 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
             <div class="ph-total" id="ph-total">Tổng: —</div>
           </div>
           <button class="ph-lock" onclick="lockPersonal()"><i class="ti ti-lock"></i> Khoá</button>
-          <button class="ph-lock" onclick="openChangePin()" style="background:rgba(255,255,255,.15);margin-left:5px"><i class="ti ti-key"></i> Đổi PIN</button>
         </div>
         <div class="sec-title">
           Tài khoản &amp; Ví
@@ -349,7 +346,7 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
         </div>
         <div class="tx-list" id="tx-list"></div>
         <div style="height:10px"></div>
-        <button class="sbtn" onclick="openOv('add-tx')"><i class="ti ti-plus"></i> Thêm giao dịch</button>
+        <button class="sbtn" onclick="clearTxForm();openOv('add-tx')"><i class="ti ti-plus"></i> Thêm giao dịch</button>
       </div>
     </div>
 
@@ -421,10 +418,11 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
 <div class="overlay" id="overlay-add-tx">
   <div class="sheet">
     <div class="handle"></div>
-    <div class="sh-title">➕ Thêm giao dịch</div>
+    <div class="sh-title" id="tx-sh-title">➕ Thêm giao dịch</div>
+    <input type="hidden" id="edit-tx-id">
     <div class="type-toggle">
-      <button class="type-btn expense active" onclick="setTxType(this,'expense')">💸 Chi tiêu</button>
-      <button class="type-btn income"         onclick="setTxType(this,'income')">💰 Thu nhập</button>
+      <button class="type-btn expense active" id="tx-btn-expense" onclick="setTxType(this,'expense')">💸 Chi tiêu</button>
+      <button class="type-btn income"         id="tx-btn-income"  onclick="setTxType(this,'income')">💰 Thu nhập</button>
     </div>
     <div class="fg"><label class="fl">Số tiền (VNĐ)</label>
       <input class="fi" id="tx-amt" type="number" inputmode="decimal" placeholder="0" min="0" style="font-size:22px;font-weight:700"></div>
@@ -443,7 +441,7 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
         <option value="shopping">🛍️ Mua sắm</option><option value="salary">💼 Lương</option>
         <option value="subscription">📱 Đăng ký dịch vụ</option><option value="other">📌 Khác</option>
       </select></div>
-    <div class="fg">
+    <div class="fg" id="tx-shared-wrap">
       <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:600">
         <input type="checkbox" id="tx-shared" style="width:17px;height:17px;accent-color:var(--pri)">
         Phân loại <strong>Chi phí Chung gia đình</strong>
@@ -451,7 +449,7 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
       <div style="font-size:11px;color:var(--mu);margin-top:5px;margin-left:25px">Bật → hiện ở Tổng quan. Số dư ví vẫn ẩn.</div>
     </div>
     <button class="sbtn" id="tx-sbtn" onclick="submitTx()"><i class="ti ti-device-floppy"></i> Lưu &amp; Đồng bộ</button>
-    <button class="cbtn" onclick="closeOv('add-tx')">Huỷ</button>
+    <button class="cbtn" onclick="closeTxForm()">Huỷ</button>
   </div>
 </div>
 
@@ -513,12 +511,7 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
     <div class="sh-title" id="inv-sh-title">📦 Thêm mặt hàng kho</div>
     <input type="hidden" id="edit-inv-id">
     <div class="fg"><label class="fl">Emoji</label>
-      <div class="fi-with-pick">
-        <input class="fi" id="inv-emoji" type="text" placeholder="🧻" maxlength="2" oninput="syncEmojiBtn('inv')">
-        <button class="epick-trigger" id="inv-epick-btn" onclick="toggleEmojiPicker('inv')">📦</button>
-      </div>
-      <div class="emoji-picker" id="inv-emoji-picker" style="display:none" data-target="inv"></div>
-    </div>
+      <input class="fi" id="inv-emoji" type="text" placeholder="🧻" maxlength="2"></div>
     <div class="fg"><label class="fl">Tên mặt hàng</label>
       <input class="fi" id="inv-name" type="text" placeholder="Khăn giấy..."></div>
     <div class="fg"><label class="fl">Số lượng</label>
@@ -569,12 +562,7 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
     <div class="fg"><label class="fl">Tên thành viên</label>
       <input class="fi" id="mem-name" type="text" placeholder="Bố Minh..."></div>
     <div class="fg"><label class="fl">Emoji đại diện</label>
-      <div class="fi-with-pick">
-        <input class="fi" id="mem-emoji" type="text" placeholder="👨" maxlength="2" oninput="syncEmojiBtn('mem')">
-        <button class="epick-trigger" id="mem-epick-btn" onclick="toggleEmojiPicker('mem')">👤</button>
-      </div>
-      <div class="emoji-picker" id="mem-emoji-picker" style="display:none" data-target="mem"></div>
-    </div>
+      <input class="fi" id="mem-emoji" type="text" placeholder="👨" maxlength="2"></div>
     <div class="fg"><label class="fl">Vai trò</label>
       <select class="fi" id="mem-role">
         <option value="parent">Bố / Mẹ</option>
@@ -587,27 +575,6 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
       <input class="fi" id="mem-color" type="color" value="#6C63FF" style="height:48px;padding:4px 8px"></div>
     <button class="sbtn" onclick="submitMember()"><i class="ti ti-device-floppy"></i> Tạo thành viên</button>
     <button class="cbtn" onclick="closeOv('add-member')">Huỷ</button>
-  </div>
-</div>
-
-<!-- CHANGE PIN -->
-<div class="overlay" id="overlay-change-pin">
-  <div class="sheet">
-    <div class="handle"></div>
-    <div class="sh-title">🔑 Đổi mã PIN</div>
-    <div style="text-align:center;margin-bottom:16px">
-      <div style="font-size:36px" id="cpn-emoji">👤</div>
-      <div style="font-family:var(--fh);font-size:16px;font-weight:800;margin-top:4px" id="cpn-name">—</div>
-    </div>
-    <div class="fg"><label class="fl">PIN hiện tại</label>
-      <input class="fi" id="cpn-old" type="password" placeholder="••••" maxlength="4" inputmode="numeric"></div>
-    <div class="fg"><label class="fl">PIN mới</label>
-      <input class="fi" id="cpn-new" type="password" placeholder="••••" maxlength="4" inputmode="numeric"></div>
-    <div class="fg"><label class="fl">Xác nhận PIN mới</label>
-      <input class="fi" id="cpn-confirm" type="password" placeholder="••••" maxlength="4" inputmode="numeric"></div>
-    <div class="pin-err" id="cpn-err" style="text-align:center;margin-bottom:10px"></div>
-    <button class="sbtn" id="cpn-sbtn" onclick="submitChangePin()"><i class="ti ti-key"></i> Xác nhận đổi PIN</button>
-    <button class="cbtn" onclick="closeOv('change-pin')">Huỷ</button>
   </div>
 </div>
 
@@ -762,11 +729,6 @@ async function demoApi(p){
   if(a==='get_notes_public') return JSON.parse(JSON.stringify(d.notes));
   if(a==='get_recurring')    return JSON.parse(JSON.stringify(d.recurring||[]));
   if(a==='verify_pin')       return { valid: p.pin==='1234' };
-  if(a==='change_pin'){
-    if(p.pin!=='1234') throw new Error('PIN hiện tại không đúng');
-    // Demo mode: chấp nhận đổi nhưng không lưu thực sự
-    return { changed: true };
-  }
   if(a==='get_personal'){
     if(p.pin!=='1234') throw new Error('Sai PIN');
     const pd=d.personal[p.member_id]||{accounts:[],transactions:[]};
@@ -775,8 +737,18 @@ async function demoApi(p){
   const id='dm_'+Date.now();
   if(a==='add_transaction'){
     const pd=d.personal[p.member_id];
-    if(pd) pd.transactions.unshift({id,date:p.date,amount:+p.amount,type:p.type,category:p.category,description:p.description,is_shared:!!p.is_shared});
+    if(pd) pd.transactions.unshift({id,date:p.date,amount:+p.amount,type:p.type,category:p.category,description:p.description,is_shared:!!p.is_shared,account_id:p.account_id});
     if(p.is_shared) d.shared.unshift({id:id+'s',description:p.description,amount:+p.amount,category:p.category,date:p.date,paid_by:S.members.find(m=>m.id===p.member_id)?.name||'?',status:'paid'});
+  }
+  if(a==='update_transaction'){
+    const pd=d.personal[p.member_id];
+    if(pd){const t=pd.transactions.find(x=>x.id===p.tx_id);if(t){t.amount=+p.amount;t.type=p.type;t.category=p.category;t.description=p.description;t.date=p.date;t.account_id=p.account_id;}}
+    return {updated:true};
+  }
+  if(a==='delete_transaction'){
+    const pd=d.personal[p.member_id];
+    if(pd) pd.transactions=pd.transactions.filter(x=>x.id!==p.tx_id);
+    return {deleted:true};
   }
   if(a==='add_account'){ const pd=d.personal[p.member_id]; if(pd) pd.accounts.unshift({id,name:p.name,type:p.type,balance:+p.balance||0}); }
   if(a==='update_account'){ const pd=d.personal[p.member_id]; if(pd){const ac=pd.accounts.find(x=>x.id===p.account_id);if(ac){ac.name=p.name;ac.type=p.type;ac.balance=+p.balance;}} }
@@ -1124,14 +1096,66 @@ function renderTx(){
   const el=document.getElementById('tx-list');
   if(!txs.length){el.innerHTML='<div class="empty"><i class="ti ti-receipt-off"></i><p>Không có giao dịch</p></div>';return;}
   el.innerHTML=txs.map(t=>`
-    <div class="tx-item">
-      <div class="tx-ico" style="background:${BG[t.category]};color:${COL[t.category]}">${ICON[t.category]||'📌'}</div>
-      <div class="tx-info">
-        <div class="tx-name">${t.description}</div>
-        <div class="tx-meta">${t.date} · ${t.category}${(t.is_shared===true||t.is_shared==='TRUE')?' <span class="tag">👥 Chung</span>':''}</div>
+    <div class="tx-wrap" id="txw-${t.id}">
+      <div class="tx-actions">
+        <button class="tx-act-btn edit" onclick="editTx('${t.id}')"><i class="ti ti-pencil"></i>Sửa</button>
+        <button class="tx-act-btn del"  onclick="delTx('${t.id}','${(t.description||'').replace(/'/g,'')}')"><i class="ti ti-trash"></i>Xoá</button>
       </div>
-      <div class="tx-amt ${t.type==='income'?'in':'out'}">${t.type==='income'?'+':'-'}${fmt(t.amount)}</div>
+      <div class="tx-item" id="txi-${t.id}" data-txid="${t.id}">
+        <div class="tx-ico" style="background:${BG[t.category]};color:${COL[t.category]}">${ICON[t.category]||'📌'}</div>
+        <div class="tx-info">
+          <div class="tx-name">${t.description}</div>
+          <div class="tx-meta">${t.date} · ${t.category}${(t.is_shared===true||t.is_shared==='TRUE')?' <span class="tag">👥 Chung</span>':''}</div>
+        </div>
+        <div class="tx-amt ${t.type==='income'?'in':'out'}">${t.type==='income'?'+':'-'}${fmt(t.amount)}</div>
+      </div>
     </div>`).join('');
+  initTxSwipe();
+}
+
+const SWIPE_W = 124; // 2 buttons × 62px
+let _activeTxWrap = null;
+
+function closeTxSwipe() {
+  if (_activeTxWrap) {
+    const item = _activeTxWrap.querySelector('.tx-item');
+    if (item) item.style.transform = '';
+    _activeTxWrap = null;
+  }
+}
+
+function initTxSwipe() {
+  document.querySelectorAll('.tx-item').forEach(item => {
+    let sx = 0, moved = false, dragging = false, cur = 0;
+    item.addEventListener('touchstart', e => {
+      sx = e.touches[0].clientX; moved = false; dragging = true;
+      cur = _activeTxWrap === item.closest('.tx-wrap') ? -SWIPE_W : 0;
+    }, { passive: true });
+    item.addEventListener('touchmove', e => {
+      if (!dragging) return;
+      const dx = e.touches[0].clientX - sx;
+      if (Math.abs(dx) > 6) moved = true;
+      const next = Math.min(0, Math.max(-SWIPE_W, cur + dx));
+      item.style.transform = `translateX(${next}px)`;
+    }, { passive: true });
+    item.addEventListener('touchend', e => {
+      if (!dragging) return; dragging = false;
+      const dx = e.changedTouches[0].clientX - sx;
+      const wrap = item.closest('.tx-wrap');
+      if (dx < -40) {
+        if (_activeTxWrap && _activeTxWrap !== wrap) closeTxSwipe();
+        item.style.transform = `translateX(-${SWIPE_W}px)`;
+        _activeTxWrap = wrap;
+      } else if (dx > 20 || !moved) {
+        item.style.transform = '';
+        if (_activeTxWrap === wrap) _activeTxWrap = null;
+      }
+    });
+  });
+  // Tap elsewhere closes open swipe
+  document.getElementById('tx-list').addEventListener('touchstart', e => {
+    if (_activeTxWrap && !_activeTxWrap.contains(e.target)) closeTxSwipe();
+  }, { passive: true });
 }
 
 // ─── INVENTORY ────────────────────────────────────────
@@ -1186,7 +1210,6 @@ function editInv(id){
   document.getElementById('inv-sh-title').textContent='✏️ Chỉnh sửa mặt hàng';
   document.getElementById('edit-inv-id').value=id;
   document.getElementById('inv-emoji').value=it.emoji;
-  document.getElementById('inv-epick-btn').textContent=it.emoji||'📦';
   document.getElementById('inv-name').value=it.name;
   document.getElementById('inv-qty').value=it.quantity;
   document.getElementById('inv-unit').value=it.unit;
@@ -1201,8 +1224,6 @@ function clearInvForm(){
   ['edit-inv-id','inv-emoji','inv-name','inv-qty','inv-unit','inv-min'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('inv-cat').value='hygiene';
   document.getElementById('inv-sbtn').innerHTML='<i class="ti ti-device-floppy"></i> Lưu mặt hàng';
-  document.getElementById('inv-epick-btn').textContent='📦';
-  document.getElementById('inv-emoji-picker').style.display='none';
 }
 async function submitInv(){
   const name=document.getElementById('inv-name').value.trim();
@@ -1296,7 +1317,59 @@ async function delNote(id){
 
 // ─── TRANSACTIONS ─────────────────────────────────────
 let txType='expense';
+let editTxId=null;
 function setTxType(btn,t){txType=t;document.querySelectorAll('.type-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+
+function clearTxForm(){
+  editTxId=null;
+  document.getElementById('edit-tx-id').value='';
+  document.getElementById('tx-sh-title').textContent='➕ Thêm giao dịch';
+  document.getElementById('tx-amt').value='';
+  document.getElementById('tx-desc').value='';
+  document.getElementById('tx-date').value=nd();
+  document.getElementById('tx-shared').checked=false;
+  document.getElementById('tx-shared-wrap').style.display='';
+  document.getElementById('tx-sbtn').innerHTML='<i class="ti ti-device-floppy"></i> Lưu &amp; Đồng bộ';
+  setTxType(document.getElementById('tx-btn-expense'),'expense');
+}
+function closeTxForm(){clearTxForm();closeOv('add-tx');}
+
+function editTx(id){
+  closeTxSwipe();
+  const t=S.personal.transactions.find(x=>x.id===id); if(!t)return;
+  editTxId=id;
+  document.getElementById('edit-tx-id').value=id;
+  document.getElementById('tx-sh-title').textContent='✏️ Sửa giao dịch';
+  document.getElementById('tx-amt').value=t.amount;
+  document.getElementById('tx-desc').value=t.description;
+  document.getElementById('tx-date').value=t.date;
+  document.getElementById('tx-acc').value=t.account_id||'';
+  document.getElementById('tx-cat').value=t.category||'other';
+  document.getElementById('tx-shared').checked=!!(t.is_shared===true||t.is_shared==='TRUE');
+  document.getElementById('tx-sbtn').innerHTML='<i class="ti ti-device-floppy"></i> Cập nhật';
+  // Khi sửa ẩn checkbox chung (không thay đổi trạng thái shared khi edit)
+  document.getElementById('tx-shared-wrap').style.display='none';
+  const typeBtn = t.type==='income'?document.getElementById('tx-btn-income'):document.getElementById('tx-btn-expense');
+  setTxType(typeBtn, t.type);
+  openOv('add-tx');
+}
+
+async function delTx(id,desc){
+  closeTxSwipe();
+  if(!confirm(`Xoá giao dịch "${desc}"?`))return;
+  try{
+    await api('POST',{action:'delete_transaction',member_id:S.personal.mid,tx_id:id,pin:S.personal.pin});
+    const t=S.personal.transactions.find(x=>x.id===id);
+    if(t){
+      const acc=S.personal.accounts.find(a=>a.id===t.account_id);
+      if(acc) acc.balance=(+acc.balance)+(t.type==='income'?-t.amount:+t.amount);
+    }
+    S.personal.transactions=S.personal.transactions.filter(x=>x.id!==id);
+    renderPersonalContent();
+    showToast('🗑️ Đã xoá giao dịch');
+  }catch(e){showToast('❌ '+e.message);}
+}
+
 async function submitTx(){
   if(!S.personal.mid){showToast('❗ Vui lòng mở khoá ví (nhập PIN)');return;}
   const amount=parseFloat(document.getElementById('tx-amt').value);
@@ -1309,20 +1382,32 @@ async function submitTx(){
   const btn=document.getElementById('tx-sbtn');
   btn.disabled=true; btn.innerHTML='<div class="spin"></div> Đang lưu...';
   try{
-    const r=await api('POST',{action:'add_transaction',member_id:S.personal.mid,account_id:accountId,date,amount,type:txType,category,description:desc,is_shared:isShared,pin:S.personal.pin});
-    S.personal.transactions.unshift({id:r.id,date,amount,type:txType,category,description:desc,is_shared:isShared});
-    if(isShared) S.shared.unshift({id:r.id+'s',description:desc,amount,category,date,paid_by:S.personal.name,status:'paid'});
-    const acc=S.personal.accounts.find(a=>a.id===accountId);
-    if(acc) acc.balance=(+acc.balance)+(txType==='income'?amount:-amount);
+    if(editTxId){
+      // ── UPDATE ──
+      const old=S.personal.transactions.find(x=>x.id===editTxId);
+      await api('POST',{action:'update_transaction',member_id:S.personal.mid,tx_id:editTxId,account_id:accountId,date,amount,type:txType,category,description:desc,pin:S.personal.pin});
+      // Hoàn số dư cũ rồi áp số dư mới
+      const acc=S.personal.accounts.find(a=>a.id===accountId);
+      if(acc&&old){
+        acc.balance=(+acc.balance)+(old.type==='income'?-old.amount:+old.amount);
+        acc.balance=(+acc.balance)+(txType==='income'?amount:-amount);
+      }
+      if(old){old.amount=amount;old.type=txType;old.category=category;old.description=desc;old.date=date;old.account_id=accountId;}
+      showToast('✅ Đã cập nhật giao dịch');
+    } else {
+      // ── ADD ──
+      const r=await api('POST',{action:'add_transaction',member_id:S.personal.mid,account_id:accountId,date,amount,type:txType,category,description:desc,is_shared:isShared,pin:S.personal.pin});
+      S.personal.transactions.unshift({id:r.id,date,amount,type:txType,category,description:desc,is_shared:isShared,account_id:accountId});
+      if(isShared) S.shared.unshift({id:r.id+'s',description:desc,amount,category,date,paid_by:S.personal.name,status:'paid'});
+      const acc=S.personal.accounts.find(a=>a.id===accountId);
+      if(acc) acc.balance=(+acc.balance)+(txType==='income'?amount:-amount);
+      showToast('✅ Đã lưu'+(isShared?' (hiện ở Tổng quan)':''));
+    }
     renderPersonalContent();
     if(S.curPage==='overview') buildDeck(S.deckFilter);
-    closeOv('add-tx');
-    showToast('✅ Đã lưu'+(isShared?' (hiện ở Tổng quan)':''));
-    document.getElementById('tx-amt').value='';
-    document.getElementById('tx-desc').value='';
-    document.getElementById('tx-shared').checked=false;
+    closeTxForm();
   }catch(e){showToast('❌ '+e.message);}
-  finally{btn.disabled=false;btn.innerHTML='<i class="ti ti-device-floppy"></i> Lưu &amp; Đồng bộ';}
+  finally{btn.disabled=false;btn.innerHTML=editTxId?'<i class="ti ti-device-floppy"></i> Cập nhật':'<i class="ti ti-device-floppy"></i> Lưu &amp; Đồng bộ';}
 }
 async function submitShared(){
   const desc=document.getElementById('sh-desc').value.trim();
@@ -1351,74 +1436,6 @@ async function submitMember(){
   renderPersonalMembers(); renderOverview();
   closeOv('add-member'); showToast('✅ Đã thêm '+name);
   document.getElementById('mem-name').value=''; document.getElementById('mem-pin').value='';
-}
-
-// ─── EMOJI PICKER ─────────────────────────────────────
-const EMOJI_MEMBERS=['👨','👩','👦','👧','🧑','👴','👵','👶','🧒','🙎','🙍','💁','🙋','🧑‍💼','👨‍💼','👩‍💼','🧑‍🍳','👨‍🍳','👩‍🍳','🧑‍🎓','🧕','👲','🧔','🐣','😊','😄','😎','🥰','😍','🤩','🙃','😴','🤓','😇','🦸','🦹','🧛','🧜','🧝','🐱','🐶','🦊','🐻','🐼','🦁','🐯','🐧'];
-const EMOJI_INV=['🧻','🧴','🧼','🪥','🧽','🧹','🧺','🧷','🛁','🚿','🪒','💊','🩺','🩹','🌡️','🍽️','🥄','🍴','🫙','🍶','🥢','🧂','🫒','🧃','🥛','🍵','☕','🫖','🥤','🍺','🛒','🛍️','📦','🎁','🔋','💡','🔦','🕯️','🪣','🪤','🔧','🔨','🪛','🧰','🪜','🗑️','🪟','🚪','🛏️','🪑','🛋️','🪴','🌿','🍃','🌱','🌻','🌼','🌸','❄️','🔑','🗝️','🏷️','📋','📌','✂️','📎'];
-
-function initEmojiPicker(scope, emojis) {
-  const el = document.getElementById(scope+'-emoji-picker');
-  if (!el || el.dataset.init) return;
-  el.dataset.init = '1';
-  el.innerHTML = emojis.map(e =>
-    `<button class="epick" onclick="pickEmoji('${scope}','${e}')">${e}</button>`
-  ).join('');
-}
-
-function toggleEmojiPicker(scope) {
-  const emojis = scope==='mem' ? EMOJI_MEMBERS : EMOJI_INV;
-  initEmojiPicker(scope, emojis);
-  const el = document.getElementById(scope+'-emoji-picker');
-  const isOpen = el.style.display !== 'none';
-  el.style.display = isOpen ? 'none' : 'flex';
-}
-
-function pickEmoji(scope, emoji) {
-  document.getElementById(scope+'-emoji').value = emoji;
-  document.getElementById(scope+'-epick-btn').textContent = emoji;
-  document.querySelectorAll('#'+scope+'-emoji-picker .epick').forEach(b=>b.classList.toggle('sel', b.textContent===emoji));
-  document.getElementById(scope+'-emoji-picker').style.display = 'none';
-}
-
-function syncEmojiBtn(scope) {
-  const v = document.getElementById(scope+'-emoji').value.trim();
-  if(v) document.getElementById(scope+'-epick-btn').textContent = v;
-}
-
-// ─── CHANGE PIN ───────────────────────────────────────
-function openChangePin(){
-  if(!S.personal.mid){showToast('❗ Chưa mở ví');return;}
-  document.getElementById('cpn-emoji').textContent = S.personal.emoji;
-  document.getElementById('cpn-name').textContent  = S.personal.name;
-  document.getElementById('cpn-old').value='';
-  document.getElementById('cpn-new').value='';
-  document.getElementById('cpn-confirm').value='';
-  document.getElementById('cpn-err').textContent='';
-  openOv('change-pin');
-}
-async function submitChangePin(){
-  const oldPin = document.getElementById('cpn-old').value;
-  const newPin = document.getElementById('cpn-new').value;
-  const confirm2 = document.getElementById('cpn-confirm').value;
-  const errEl = document.getElementById('cpn-err');
-  errEl.textContent='';
-  if(oldPin.length!==4||newPin.length!==4||confirm2.length!==4){errEl.textContent='❗ Tất cả PIN phải đủ 4 số';return;}
-  if(newPin!==confirm2){errEl.textContent='❌ PIN mới và xác nhận không khớp';return;}
-  if(newPin===oldPin){errEl.textContent='❗ PIN mới phải khác PIN cũ';return;}
-  const btn=document.getElementById('cpn-sbtn');
-  btn.disabled=true; btn.innerHTML='<div class="spin"></div> Đang xử lý...';
-  try{
-    // Xác minh PIN cũ trước
-    const vr = await api('GET',{action:'verify_pin',member_id:S.personal.mid,pin:oldPin});
-    if(!vr.valid){errEl.textContent='❌ PIN hiện tại không đúng';pinBuf='';return;}
-    // Đổi PIN
-    await api('POST',{action:'change_pin',member_id:S.personal.mid,pin:oldPin,new_pin:newPin});
-    S.personal.pin = newPin;
-    closeOv('change-pin');
-    showToast('✅ Đã đổi PIN thành công!');
-  }catch(e){errEl.textContent='❌ '+e.message;}
-  finally{btn.disabled=false;btn.innerHTML='<i class="ti ti-key"></i> Xác nhận đổi PIN';}
 }
 
 // ─── FILL SELECTS ─────────────────────────────────────
