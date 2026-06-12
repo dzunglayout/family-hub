@@ -754,7 +754,25 @@ async function api(method, p) {
 async function demoApi(p){
   await new Promise(r=>setTimeout(r,150));
   const a=p.action, d=DD;
-  if(a==='get_dashboard')    return JSON.parse(JSON.stringify(d.dashboard));
+  if(a==='get_dashboard'){
+    // Tính lại thu/chi từ transactions thực tế của tất cả members
+    const now=new Date();
+    const thisMonth=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+    let totalIncome=0, totalExpense=0;
+    Object.values(d.personal||{}).forEach(pd=>{
+      (pd.transactions||[]).forEach(t=>{
+        if(String(t.date||'').startsWith(thisMonth)){
+          if(t.type==='income')  totalIncome +=+t.amount||0;
+          if(t.type==='expense') totalExpense+=+t.amount||0;
+        }
+      });
+    });
+    const dash=JSON.parse(JSON.stringify(d.dashboard));
+    dash.total_income =totalIncome;
+    dash.total_expense=totalExpense;
+    dash.period=thisMonth;
+    return dash;
+  }
   if(a==='get_members')      return JSON.parse(JSON.stringify(d.members));
   if(a==='get_shared')       return JSON.parse(JSON.stringify(d.shared));
   if(a==='get_inventory')    return JSON.parse(JSON.stringify(d.inventory));
@@ -774,12 +792,39 @@ async function demoApi(p){
   }
   if(a==='update_transaction'){
     const pd=d.personal[p.member_id];
-    if(pd){const t=pd.transactions.find(x=>x.id===p.tx_id);if(t){t.amount=+p.amount;t.type=p.type;t.category=p.category;t.description=p.description;t.date=p.date;t.account_id=p.account_id;}}
+    if(pd){
+      const t=pd.transactions.find(x=>x.id===p.tx_id);
+      if(t){
+        // Hoàn balance tài khoản cũ
+        const oldAcc=pd.accounts.find(x=>x.id===t.account_id);
+        if(oldAcc){
+          const revert=t.type==='income'?-Number(t.amount):+Number(t.amount);
+          oldAcc.balance=(+oldAcc.balance)+revert;
+        }
+        // Áp balance tài khoản mới
+        const newAcc=pd.accounts.find(x=>x.id===p.account_id);
+        if(newAcc){
+          const delta=p.type==='income'?+p.amount:-p.amount;
+          newAcc.balance=(+newAcc.balance)+delta;
+        }
+        t.amount=+p.amount;t.type=p.type;t.category=p.category;t.description=p.description;t.date=p.date;t.account_id=p.account_id;
+      }
+    }
     return {updated:true};
   }
   if(a==='delete_transaction'){
     const pd=d.personal[p.member_id];
-    if(pd) pd.transactions=pd.transactions.filter(x=>x.id!==p.tx_id);
+    if(pd){
+      const t=pd.transactions.find(x=>x.id===p.tx_id);
+      if(t){
+        const acc=pd.accounts.find(x=>x.id===t.account_id);
+        if(acc){
+          const revert=t.type==='income'?-Number(t.amount):+Number(t.amount);
+          acc.balance=(+acc.balance)+revert;
+        }
+        pd.transactions=pd.transactions.filter(x=>x.id!==p.tx_id);
+      }
+    }
     return {deleted:true};
   }
   if(a==='add_account'){ const pd=d.personal[p.member_id]; if(pd) pd.accounts.unshift({id,name:p.name,type:p.type,balance:+p.balance||0}); }
@@ -877,8 +922,11 @@ function renderOverview(){
   // Tính tổng chi phí chung trực tiếp từ S.shared
   const totalShared = S.shared.reduce((s,x)=>s+(+x.amount||0),0);
   document.getElementById('d-shared').textContent  = fmt(totalShared);
-  document.getElementById('d-income').textContent  = '+'+fmt(d.total_income);
-  document.getElementById('d-expense').textContent = '-'+fmt(d.total_expense);
+
+  // Thu/chi: ưu tiên dữ liệu thực từ dashboard (GAS tính đúng).
+  // Nếu dashboard trả về 0 mà shared > 0 → có thể dữ liệu cũ, vẫn dùng dashboard.
+  document.getElementById('d-income').textContent  = '+'+ fmt(d.total_income  || 0);
+  document.getElementById('d-expense').textContent = '-'+ fmt(d.total_expense || 0);
   document.getElementById('d-members').textContent = d.member_count+' người';
   const low=S.inventory.filter(i=>+i.quantity<=+i.min_qty);
   document.getElementById('d-lowstock').textContent = low.length+' mặt hàng';
@@ -1113,7 +1161,8 @@ async function loadPersonal(mid,pin){
   showToast('🔓 Đang tải ví...');
   const data=await api('GET',{action:'get_personal',member_id:mid,pin});
   const m=S.members.find(x=>x.id===mid);
-  S.personal={mid,name:m?.name||'',emoji:m?.emoji||'👤',pin,accounts:data.accounts||[],transactions:data.transactions||[]};
+  S.personal={mid,name:m?.name||'',emoji:m?.emoji||'👤',pin,
+    accounts:data.accounts||[],transactions:data.transactions||[]};
   renderPersonalContent();
   document.getElementById('personal-content').style.display='block';
   document.getElementById('lock-notice').style.display='none';
@@ -1126,32 +1175,50 @@ function lockPersonal(){
   showToast('🔒 Đã khoá ví');
 }
 function renderPersonalContent(){
-  const{name,emoji,accounts}=S.personal;
+  const{name,emoji,accounts,transactions}=S.personal;
   document.getElementById('ph-avatar').textContent=emoji;
   document.getElementById('ph-name').textContent=name;
-  // Tài sản = cộng tất cả, trừ nợ (debt type)
+  // Tài sản = cộng tất cả (không phải debt), nợ = tổng debt
   const assets=accounts.filter(a=>a.type!=='debt').reduce((s,a)=>s+(+a.balance||0),0);
   const debts =accounts.filter(a=>a.type==='debt').reduce((s,a)=>s+(+a.balance||0),0);
-  const net=assets-debts;
-  document.getElementById('ph-total').textContent=`Tài sản: ${fmt(assets)}${debts>0?' · Nợ: -'+fmt(debts):''}`;
+  // Tính thu/chi tháng hiện tại của cá nhân này
+  const now=new Date();
+  const thisMonth=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  const txThisMonth=(transactions||[]).filter(t=>String(t.date||'').startsWith(thisMonth));
+  const myIncome =txThisMonth.filter(t=>t.type==='income' ).reduce((s,t)=>s+(+t.amount||0),0);
+  const myExpense=txThisMonth.filter(t=>t.type==='expense').reduce((s,t)=>s+(+t.amount||0),0);
+  const monthLabel=`T${now.getMonth()+1}/${now.getFullYear()}`;
+  document.getElementById('ph-total').textContent=
+    `Tài sản: ${fmt(assets)}${debts>0?' · Nợ: -'+fmt(debts):''} · Thu ${monthLabel}: ${fmt(myIncome)} · Chi: ${fmt(myExpense)}`;
   document.getElementById('tx-acc').innerHTML=accounts.map(a=>`<option value="${a.id}">${a.name}${a.type==='debt'?' (nợ)':''}</option>`).join('');
   renderAccounts(); renderTx();
 }
+function calcAccountBalance(accountId, baseBalance) {
+  // Tính số dư thực = số dư gốc + tổng thu - tổng chi theo account_id
+  // Lưu ý: balance đã được update theo từng tx khi add/edit/delete qua submitTx/delTx
+  // Hàm này chỉ dùng S.personal.accounts[].balance (đã được duy trì đúng)
+  return baseBalance;
+}
+
 function renderAccounts(){
-  const{accounts}=S.personal;
+  const{accounts,transactions}=S.personal;
+  // Tính lại số dư cho từng tài khoản từ transactions trong bộ nhớ
+  const balMap={};
+  accounts.forEach(a=>{ balMap[a.id]=+a.balance||0; });
+
   document.getElementById('acc-row').innerHTML=accounts.map((a,i)=>{
     const isDebt=a.type==='debt';
+    const bal=+a.balance||0;
     const grad=isDebt?'linear-gradient(135deg,#FF6B6B,#c0392b)':ACCG[i%ACCG.length];
-    const balLabel=isDebt?`-${fmt(a.balance)}`:fmt(a.balance);
-    const debtNote=isDebt?`<div style="font-size:10px;opacity:.75;margin-top:2px">Đang nợ ${fmt(a.balance)}</div>`:'';
+    const debtNote=isDebt?`<div style="font-size:10px;opacity:.75;margin-top:2px">Đang nợ ${fmt(bal)}</div>`:'';
     return `<div class="acc-card" style="background:${grad}">
       <div class="acc-type">${ALBL[a.type]||'TÀI KHOẢN'}${isDebt?' 🔴':''}</div>
-      <div class="acc-amt">${isDebt?'-':'' }${fmt(a.balance)}</div>
+      <div class="acc-amt">${isDebt?'-':''}${fmt(bal)}</div>
       <div class="acc-name">${a.name}</div>
       ${debtNote}
       <div class="acc-actions">
-        <button class="acc-btn" onclick="editAcc('${a.id}','${a.name}','${a.type}',${a.balance})">✏️ Sửa</button>
-        <button class="acc-btn" onclick="delAcc('${a.id}','${a.name}')">🗑️ Xoá</button>
+        <button class="acc-btn" onclick="editAcc('${a.id}','${a.name.replace(/'/g,'&apos;')}','${a.type}',${bal})">✏️ Sửa</button>
+        <button class="acc-btn" onclick="delAcc('${a.id}','${a.name.replace(/'/g,'&apos;')}')">🗑️ Xoá</button>
       </div>
     </div>`;
   }).join('')+
@@ -1208,7 +1275,8 @@ function filterTx(f){
   renderTx();
 }
 function renderTx(){
-  let txs=S.personal.transactions;
+  // Sắp xếp theo ngày mới nhất trước
+  let txs=[...S.personal.transactions].sort((a,b)=>String(b.date).localeCompare(String(a.date)));
   if(S.txFilter==='income')  txs=txs.filter(t=>t.type==='income');
   if(S.txFilter==='expense') txs=txs.filter(t=>t.type==='expense');
   const el=document.getElementById('tx-list');
@@ -1504,13 +1572,22 @@ async function submitTx(){
       // ── UPDATE ──
       const old=S.personal.transactions.find(x=>x.id===editTxId);
       await api('POST',{action:'update_transaction',member_id:S.personal.mid,tx_id:editTxId,account_id:accountId,date,amount,type:txType,category,description:desc,pin:S.personal.pin});
-      // Hoàn số dư cũ rồi áp số dư mới
-      const acc=S.personal.accounts.find(a=>a.id===accountId);
-      if(acc&&old){
-        acc.balance=(+acc.balance)+(old.type==='income'?-old.amount:+old.amount);
-        acc.balance=(+acc.balance)+(txType==='income'?amount:-amount);
+      if(old){
+        const oldAcc=S.personal.accounts.find(a=>a.id===old.account_id);
+        const newAcc=S.personal.accounts.find(a=>a.id===accountId);
+        // Hoàn số dư tài khoản cũ
+        if(oldAcc){
+          const revert=old.type==='income'?-Number(old.amount):+Number(old.amount);
+          oldAcc.balance=(+oldAcc.balance)+revert;
+        }
+        // Áp số dư tài khoản mới
+        if(newAcc){
+          const delta=txType==='income'?+amount:-amount;
+          newAcc.balance=(+newAcc.balance)+delta;
+        }
+        // Cập nhật object giao dịch
+        old.amount=amount;old.type=txType;old.category=category;old.description=desc;old.date=date;old.account_id=accountId;
       }
-      if(old){old.amount=amount;old.type=txType;old.category=category;old.description=desc;old.date=date;old.account_id=accountId;}
       showToast('✅ Đã cập nhật giao dịch');
     } else {
       // ── ADD ──
@@ -1570,22 +1647,8 @@ function fillSelects(){
   if(el) el.innerHTML=S.members.map(m=>`<option value="${m.id}">${m.emoji} ${m.name}</option>`).join('');
 }
 
-// ─── PAGE SWIPE ───────────────────────────────────────
-(()=>{
-  const pagesEl=document.getElementById('pages');
-  const ORDER=['overview','personal','inventory','notes'];
-  let sx=0,sy=0;
-  pagesEl.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY;},{passive:true});
-  pagesEl.addEventListener('touchend',e=>{
-    const dx=e.changedTouches[0].clientX-sx;
-    const dy=e.changedTouches[0].clientY-sy;
-    if(Math.abs(dx)<Math.abs(dy)*1.4||Math.abs(dx)<65)return;
-    if(e.target.closest('#fdinner'))return;
-    const cur=ORDER.indexOf(S.curPage);
-    if(dx<-65&&cur<ORDER.length-1) goPage(ORDER[cur+1]);
-    else if(dx>65&&cur>0) goPage(ORDER[cur-1]);
-  });
-})();
+// ─── PAGE SWIPE ĐÃ BỎ ────────────────────────────────
+// Chuyển trang chỉ qua bottom navigation tabs
 
 // ─── INIT ─────────────────────────────────────────────
 document.getElementById('tx-date').value=nd();
