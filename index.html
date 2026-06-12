@@ -92,7 +92,7 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
 .tx-item{position:relative;background:var(--card);border:1px solid var(--br);border-radius:15px;padding:11px 13px;display:flex;align-items:center;gap:11px;transition:transform .22s ease;will-change:transform;margin-bottom:0;cursor:grab}
 .tag{display:inline-flex;align-items:center;padding:2px 7px;border-radius:99px;font-size:10px;font-weight:700;background:var(--pri-l);color:var(--pri)}
 .fdwrap{margin-bottom:14px}
-.fdinner{position:relative;width:100%;height:190px;touch-action:pan-y}
+.fdinner{position:relative;width:100%;height:148px;touch-action:pan-y}
 .fcard{position:absolute;inset:0;border-radius:20px;padding:18px 20px;color:#fff;overflow:hidden;cursor:grab;user-select:none;will-change:transform;-webkit-user-select:none;transition:transform .3s cubic-bezier(.4,0,.2,1),opacity .3s}
 .fcard-ico{position:absolute;top:14px;right:14px;font-size:26px;opacity:.2}
 .fc-lbl{font-size:10px;opacity:.8;font-weight:700;letter-spacing:.5px;margin-bottom:2px}
@@ -211,6 +211,18 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
 .pkey:active{background:var(--pri-l);border-color:var(--pri);color:var(--pri)}
 .pkey.del{font-size:18px;color:var(--mu)}
 .pin-err{color:var(--r);font-size:13px;font-weight:700;min-height:18px;margin-top:8px}
+/* ── Emoji Picker ── */
+.epick-row{display:flex;gap:8px;align-items:flex-start}
+.epick-row .fi{flex:1}
+.epick-open{width:48px;height:48px;border-radius:12px;border:1.5px solid var(--br);background:var(--bg);font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-appearance:none;flex-shrink:0;transition:border-color .15s}
+.epick-open:active{border-color:var(--pri);background:var(--pri-l)}
+.epick-grid{display:flex;flex-wrap:wrap;gap:4px;padding:8px;background:var(--bg);border:1.5px solid var(--br);border-radius:12px;max-height:128px;overflow-y:auto;margin-top:6px;-webkit-overflow-scrolling:touch}
+.epick-grid::-webkit-scrollbar{display:none}
+.eg-btn{width:36px;height:36px;font-size:20px;border-radius:8px;border:1.5px solid transparent;background:transparent;cursor:pointer;-webkit-appearance:none;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.eg-btn:active,.eg-btn.sel{background:var(--pri-l);border-color:var(--pri)}
+/* ── Change PIN overlay ── */
+.cpn-avatar{font-size:46px;text-align:center;margin-bottom:6px}
+.cpn-name{font-family:var(--fh);font-size:16px;font-weight:800;text-align:center;margin-bottom:16px}
 </style>
 </head>
 <body>
@@ -330,6 +342,7 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
             <div class="ph-total" id="ph-total">Tổng: —</div>
           </div>
           <button class="ph-lock" onclick="lockPersonal()"><i class="ti ti-lock"></i> Khoá</button>
+          <button class="ph-lock" onclick="openChangePinOv()" style="margin-left:6px;background:rgba(255,255,255,.15)"><i class="ti ti-key"></i> Đổi PIN</button>
         </div>
         <div class="sec-title">
           Tài khoản &amp; Ví
@@ -414,6 +427,25 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
   </div>
 </div>
 
+<!-- CHANGE PIN -->
+<div class="overlay" id="overlay-change-pin">
+  <div class="sheet">
+    <div class="handle"></div>
+    <div class="sh-title">🔑 Đổi mã PIN</div>
+    <div class="cpn-avatar" id="cpn-emoji">👤</div>
+    <div class="cpn-name" id="cpn-name">—</div>
+    <div class="fg"><label class="fl">PIN hiện tại</label>
+      <input class="fi" id="cpn-old" type="password" placeholder="••••" maxlength="4" inputmode="numeric"></div>
+    <div class="fg"><label class="fl">PIN mới</label>
+      <input class="fi" id="cpn-new" type="password" placeholder="••••" maxlength="4" inputmode="numeric"></div>
+    <div class="fg"><label class="fl">Xác nhận PIN mới</label>
+      <input class="fi" id="cpn-confirm" type="password" placeholder="••••" maxlength="4" inputmode="numeric"></div>
+    <div class="pin-err" id="cpn-err" style="text-align:center;margin-bottom:8px"></div>
+    <button class="sbtn" id="cpn-sbtn" onclick="submitChangePin()"><i class="ti ti-key"></i> Xác nhận đổi PIN</button>
+    <button class="cbtn" onclick="closeOv('change-pin')">Huỷ</button>
+  </div>
+</div>
+
 <!-- ADD TX -->
 <div class="overlay" id="overlay-add-tx">
   <div class="sheet">
@@ -466,7 +498,6 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
         <option value="cash">💵 Tiền mặt</option><option value="bank">🏦 Ngân hàng</option>
         <option value="ewallet">📱 Ví điện tử</option><option value="savings">🐷 Tiết kiệm</option>
         <option value="invest">📈 Đầu tư</option>
-        <option value="debt">💳 Thẻ tín dụng / Ghi nợ</option>
       </select></div>
     <div class="fg"><label class="fl">Số dư hiện tại (VNĐ)</label>
       <input class="fi" id="acc-bal" type="number" inputmode="decimal" placeholder="0" min="0"></div>
@@ -512,7 +543,12 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
     <div class="sh-title" id="inv-sh-title">📦 Thêm mặt hàng kho</div>
     <input type="hidden" id="edit-inv-id">
     <div class="fg"><label class="fl">Emoji</label>
-      <input class="fi" id="inv-emoji" type="text" placeholder="🧻" maxlength="2"></div>
+      <div class="epick-row">
+        <input class="fi" id="inv-emoji" type="text" placeholder="🧻" maxlength="2" oninput="syncPickerBtn('inv')">
+        <button class="epick-open" id="inv-epick-btn" onclick="togglePicker('inv')">📦</button>
+      </div>
+      <div class="epick-grid" id="inv-epick-grid" style="display:none"></div>
+    </div>
     <div class="fg"><label class="fl">Tên mặt hàng</label>
       <input class="fi" id="inv-name" type="text" placeholder="Khăn giấy..."></div>
     <div class="fg"><label class="fl">Số lượng</label>
@@ -563,7 +599,12 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
     <div class="fg"><label class="fl">Tên thành viên</label>
       <input class="fi" id="mem-name" type="text" placeholder="Bố Minh..."></div>
     <div class="fg"><label class="fl">Emoji đại diện</label>
-      <input class="fi" id="mem-emoji" type="text" placeholder="👨" maxlength="2"></div>
+      <div class="epick-row">
+        <input class="fi" id="mem-emoji" type="text" placeholder="👨" maxlength="2" oninput="syncPickerBtn('mem')">
+        <button class="epick-open" id="mem-epick-btn" onclick="togglePicker('mem')">👤</button>
+      </div>
+      <div class="epick-grid" id="mem-epick-grid" style="display:none"></div>
+    </div>
     <div class="fg"><label class="fl">Vai trò</label>
       <select class="fi" id="mem-role">
         <option value="parent">Bố / Mẹ</option>
@@ -576,37 +617,6 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
       <input class="fi" id="mem-color" type="color" value="#6C63FF" style="height:48px;padding:4px 8px"></div>
     <button class="sbtn" onclick="submitMember()"><i class="ti ti-device-floppy"></i> Tạo thành viên</button>
     <button class="cbtn" onclick="closeOv('add-member')">Huỷ</button>
-  </div>
-</div>
-
-<!-- EDIT SHARED -->
-<div class="overlay" id="overlay-edit-shared">
-  <div class="sheet">
-    <div class="handle"></div>
-    <div class="sh-title" id="esh-sh-title">✏️ Chỉnh sửa chi phí chung</div>
-    <input type="hidden" id="edit-sh-id">
-    <div class="fg"><label class="fl">Mô tả</label>
-      <input class="fi" id="esh-desc" type="text" placeholder="Tiền điện tháng 7..."></div>
-    <div class="fg"><label class="fl">Số tiền (VNĐ)</label>
-      <input class="fi" id="esh-amt" type="number" inputmode="decimal" placeholder="0" min="0"></div>
-    <div class="fg"><label class="fl">Danh mục</label>
-      <select class="fi" id="esh-cat">
-        <option value="electric">⚡ Tiền điện</option><option value="water">💧 Tiền nước</option>
-        <option value="food">🛒 Chợ / Siêu thị</option><option value="internet">🌐 Internet</option>
-        <option value="tv">📺 Truyền hình</option><option value="subscription">📱 YouTube/Google/Netflix</option>
-        <option value="other">🏠 Khác</option>
-      </select></div>
-    <div class="fg"><label class="fl">Người chi</label>
-      <select class="fi" id="esh-paid"></select></div>
-    <div class="fg"><label class="fl">Ngày</label>
-      <input class="fi" id="esh-date" type="date"></div>
-    <div class="fg"><label class="fl">Trạng thái</label>
-      <select class="fi" id="esh-status">
-        <option value="unpaid">⏳ Chưa thanh toán</option>
-        <option value="paid">✅ Đã thanh toán</option>
-      </select></div>
-    <button class="sbtn" onclick="submitEditShared()"><i class="ti ti-device-floppy"></i> Cập nhật</button>
-    <button class="cbtn" onclick="closeOv('edit-shared')">Huỷ</button>
   </div>
 </div>
 
@@ -754,31 +764,17 @@ async function api(method, p) {
 async function demoApi(p){
   await new Promise(r=>setTimeout(r,150));
   const a=p.action, d=DD;
-  if(a==='get_dashboard'){
-    // Tính lại thu/chi từ transactions thực tế của tất cả members
-    const now=new Date();
-    const thisMonth=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
-    let totalIncome=0, totalExpense=0;
-    Object.values(d.personal||{}).forEach(pd=>{
-      (pd.transactions||[]).forEach(t=>{
-        if(String(t.date||'').startsWith(thisMonth)){
-          if(t.type==='income')  totalIncome +=+t.amount||0;
-          if(t.type==='expense') totalExpense+=+t.amount||0;
-        }
-      });
-    });
-    const dash=JSON.parse(JSON.stringify(d.dashboard));
-    dash.total_income =totalIncome;
-    dash.total_expense=totalExpense;
-    dash.period=thisMonth;
-    return dash;
-  }
+  if(a==='get_dashboard')    return JSON.parse(JSON.stringify(d.dashboard));
   if(a==='get_members')      return JSON.parse(JSON.stringify(d.members));
   if(a==='get_shared')       return JSON.parse(JSON.stringify(d.shared));
   if(a==='get_inventory')    return JSON.parse(JSON.stringify(d.inventory));
   if(a==='get_notes_public') return JSON.parse(JSON.stringify(d.notes));
   if(a==='get_recurring')    return JSON.parse(JSON.stringify(d.recurring||[]));
   if(a==='verify_pin')       return { valid: p.pin==='1234' };
+  if(a==='change_pin'){
+    if(p.pin!=='1234') throw new Error('PIN hiện tại không đúng');
+    return { changed: true }; // Demo: chấp nhận nhưng không lưu thực sự
+  }
   if(a==='get_personal'){
     if(p.pin!=='1234') throw new Error('Sai PIN');
     const pd=d.personal[p.member_id]||{accounts:[],transactions:[]};
@@ -792,51 +788,18 @@ async function demoApi(p){
   }
   if(a==='update_transaction'){
     const pd=d.personal[p.member_id];
-    if(pd){
-      const t=pd.transactions.find(x=>x.id===p.tx_id);
-      if(t){
-        // Hoàn balance tài khoản cũ
-        const oldAcc=pd.accounts.find(x=>x.id===t.account_id);
-        if(oldAcc){
-          const revert=t.type==='income'?-Number(t.amount):+Number(t.amount);
-          oldAcc.balance=(+oldAcc.balance)+revert;
-        }
-        // Áp balance tài khoản mới
-        const newAcc=pd.accounts.find(x=>x.id===p.account_id);
-        if(newAcc){
-          const delta=p.type==='income'?+p.amount:-p.amount;
-          newAcc.balance=(+newAcc.balance)+delta;
-        }
-        t.amount=+p.amount;t.type=p.type;t.category=p.category;t.description=p.description;t.date=p.date;t.account_id=p.account_id;
-      }
-    }
+    if(pd){const t=pd.transactions.find(x=>x.id===p.tx_id);if(t){t.amount=+p.amount;t.type=p.type;t.category=p.category;t.description=p.description;t.date=p.date;t.account_id=p.account_id;}}
     return {updated:true};
   }
   if(a==='delete_transaction'){
     const pd=d.personal[p.member_id];
-    if(pd){
-      const t=pd.transactions.find(x=>x.id===p.tx_id);
-      if(t){
-        const acc=pd.accounts.find(x=>x.id===t.account_id);
-        if(acc){
-          const revert=t.type==='income'?-Number(t.amount):+Number(t.amount);
-          acc.balance=(+acc.balance)+revert;
-        }
-        pd.transactions=pd.transactions.filter(x=>x.id!==p.tx_id);
-      }
-    }
+    if(pd) pd.transactions=pd.transactions.filter(x=>x.id!==p.tx_id);
     return {deleted:true};
   }
   if(a==='add_account'){ const pd=d.personal[p.member_id]; if(pd) pd.accounts.unshift({id,name:p.name,type:p.type,balance:+p.balance||0}); }
   if(a==='update_account'){ const pd=d.personal[p.member_id]; if(pd){const ac=pd.accounts.find(x=>x.id===p.account_id);if(ac){ac.name=p.name;ac.type=p.type;ac.balance=+p.balance;}} }
   if(a==='delete_account'){ const pd=d.personal[p.member_id]; if(pd) pd.accounts=pd.accounts.filter(x=>x.id!==p.account_id); }
   if(a==='add_shared') d.shared.unshift({id,...p,status:p.status||'unpaid'});
-  if(a==='update_shared'){
-    const s=d.shared.find(x=>x.id===p.shared_id);
-    if(s){if(p.status)s.status=p.status;if(p.description)s.description=p.description;if(p.amount)s.amount=+p.amount;if(p.category)s.category=p.category;if(p.date)s.date=p.date;if(p.paid_by)s.paid_by=p.paid_by;}
-    return {updated:true};
-  }
-  if(a==='delete_shared'){d.shared=d.shared.filter(x=>x.id!==p.shared_id);return {deleted:true};}
   if(a==='add_inventory_item') d.inventory.unshift({id,name:p.name,emoji:p.emoji||'📦',quantity:+p.quantity||0,unit:p.unit,min_qty:+p.min_qty||1,category:p.category});
   if(a==='update_inventory'){ const it=d.inventory.find(x=>x.id===p.item_id); if(it){it.name=p.name;it.emoji=p.emoji;it.quantity=+p.quantity;it.unit=p.unit;it.min_qty=+p.min_qty;it.category=p.category;} }
   if(a==='delete_inventory') d.inventory=d.inventory.filter(x=>x.id!==p.item_id);
@@ -859,8 +822,8 @@ const ICON={food:'🛒',electric:'⚡',water:'💧',internet:'🌐',tv:'📺',ed
 const COL ={food:'#FF9F43',electric:'#6C63FF',water:'#20BFC1',internet:'#4FACFE',tv:'#FF6EB4',education:'#FF6B6B',transport:'#B8860B',health:'#00C896',shopping:'#FF6EB4',salary:'#00C896',subscription:'#a78bfa',other:'#9592B8'};
 const BG  ={food:'#FFF3E0',electric:'#EDE9FF',water:'#E0FAFB',internet:'#EAF6FF',tv:'#FFF0F7',education:'#FFE8E8',transport:'#FFFFF0',health:'#E0FFF6',shopping:'#FFF0F7',salary:'#E0FFF6',subscription:'#F5F3FF',other:'#F5F3FF'};
 const GRAD={food:'linear-gradient(135deg,#FF9F43,#FF6B6B)',electric:'linear-gradient(135deg,#6C63FF,#a78bfa)',water:'linear-gradient(135deg,#20BFC1,#085450)',internet:'linear-gradient(135deg,#4FACFE,#185FA5)',tv:'linear-gradient(135deg,#FF6EB4,#a78bfa)',education:'linear-gradient(135deg,#FF6B6B,#FF9F43)',subscription:'linear-gradient(135deg,#a78bfa,#6C63FF)',other:'linear-gradient(135deg,#9592B8,#6C63FF)'};
-const ACCG=['linear-gradient(135deg,#6C63FF,#a78bfa)','linear-gradient(135deg,#20BFC1,#6DECAE)','linear-gradient(135deg,#FF6EB4,#FF9A8B)','linear-gradient(135deg,#FF9F43,#FFCA77)','linear-gradient(135deg,#4FACFE,#4364F7)','linear-gradient(135deg,#FF6B6B,#c0392b)'];
-const ALBL={cash:'TIỀN MẶT',bank:'NGÂN HÀNG',ewallet:'VÍ ĐIỆN TỬ',savings:'TIẾT KIỆM',invest:'ĐẦU TƯ',debt:'THẺ TÍN DỤNG / NỢ'};
+const ACCG=['linear-gradient(135deg,#6C63FF,#a78bfa)','linear-gradient(135deg,#20BFC1,#6DECAE)','linear-gradient(135deg,#FF6EB4,#FF9A8B)','linear-gradient(135deg,#FF9F43,#FFCA77)','linear-gradient(135deg,#4FACFE,#4364F7)'];
+const ALBL={cash:'TIỀN MẶT',bank:'NGÂN HÀNG',ewallet:'VÍ ĐIỆN TỬ',savings:'TIẾT KIỆM',invest:'ĐẦU TƯ'};
 const NACC={'#EDE9FF':'#6C63FF','#E0FFF6':'#00C896','#FFF3E0':'#FF9F43','#EAF6FF':'#4FACFE','#FFF0F7':'#FF6EB4','#FFFFF0':'#8B8B00'};
 
 // ─── NAVIGATION ───────────────────────────────────────
@@ -919,14 +882,9 @@ async function syncAll(){
 function renderOverview(){
   const d=S.dashboard; if(!d) return;
   document.getElementById('d-period').textContent  = per(d.period);
-  // Tính tổng chi phí chung trực tiếp từ S.shared
-  const totalShared = S.shared.reduce((s,x)=>s+(+x.amount||0),0);
-  document.getElementById('d-shared').textContent  = fmt(totalShared);
-
-  // Thu/chi: ưu tiên dữ liệu thực từ dashboard (GAS tính đúng).
-  // Nếu dashboard trả về 0 mà shared > 0 → có thể dữ liệu cũ, vẫn dùng dashboard.
-  document.getElementById('d-income').textContent  = '+'+ fmt(d.total_income  || 0);
-  document.getElementById('d-expense').textContent = '-'+ fmt(d.total_expense || 0);
+  document.getElementById('d-shared').textContent  = fmt(d.total_shared);
+  document.getElementById('d-income').textContent  = '+'+fmt(d.total_income);
+  document.getElementById('d-expense').textContent = '-'+fmt(d.total_expense);
   document.getElementById('d-members').textContent = d.member_count+' người';
   const low=S.inventory.filter(i=>+i.quantity<=+i.min_qty);
   document.getElementById('d-lowstock').textContent = low.length+' mặt hàng';
@@ -937,29 +895,16 @@ function renderOverview(){
     return `<div class="bcol"><div class="bbar" style="height:${Math.max(h,4)}px;background:${last?'#6C63FF':'#C4BEFE'}"></div><div class="blbl" style="${last?'color:var(--pri);font-weight:700':''}">${'T'+parseInt(m)}</div></div>`;
   }).join('');
 
-  // Nhắc nhở: lấy từ S.shared có status=unpaid, lọc 30 ngày tới
-  const today=new Date(); today.setHours(0,0,0,0);
-  const soon30=new Date(today); soon30.setDate(soon30.getDate()+30);
-  const upcoming = S.shared.filter(s=>{
-    if(s.status==='paid') return false;
-    const dd=new Date(s.date); return dd>=today && dd<=soon30;
-  }).sort((a,b)=>a.date.localeCompare(b.date));
-
-  document.getElementById('recurring-list').innerHTML = upcoming.map(r=>{
-    const dl=Math.ceil((new Date(r.date)-today)/86400000);
+  document.getElementById('recurring-list').innerHTML=(S.recurring||[]).map(r=>{
+    const dl=Math.ceil((new Date(r.due)-new Date())/86400000);
     const urgent=dl<=7,bg=urgent?'var(--rl)':'var(--al)',bc=urgent?'var(--r)':'var(--a)';
-    const bt=dl<=0?'Quá hạn!':dl<=7?`${dl} ngày nữa`:r.date.slice(5);
-    const ico=ICON[r.category]||'📌';
+    const bt=dl<=0?'Quá hạn!':dl<=7?dl+'ng nữa':r.due.slice(5);
     return `<div class="acard" style="border-left:3px solid ${bc}">
-      <div class="aico" style="background:${bg}">${ico}</div>
-      <div class="ainfo"><div class="aname">${r.description}</div><div class="asub">Đến hạn: ${r.date} · ${r.paid_by}</div></div>
-      <div class="aright">
-        <div class="aamt">${fmt(r.amount)}</div>
-        <div class="abadge" style="background:${bg};color:${bc}">${bt}</div>
-        <button class="acc-btn" style="margin-top:5px;font-size:10px;background:var(--gl);color:var(--gd);border-color:rgba(0,200,150,.3)" onclick="markPaid('${r.id}')">✅ Đánh dấu đã đóng</button>
-      </div>
+      <div class="aico" style="background:${bg}">${r.icon}</div>
+      <div class="ainfo"><div class="aname">${r.name}</div><div class="asub">Đến hạn: ${r.due}</div></div>
+      <div class="aright"><div class="aamt">${fmt(r.amount)}</div><div class="abadge" style="background:${bg};color:${bc}">${bt}</div></div>
     </div>`;
-  }).join('')||'<div class="empty" style="padding:10px 0"><p>Không có hoá đơn chưa thanh toán 🎉</p></div>';
+  }).join('')||'<div class="empty" style="padding:10px 0"><p>Không có phí sắp đến hạn 🎉</p></div>';
 
   document.getElementById('lowstock-list').innerHTML=low.map(i=>{
     const empty=+i.quantity<=0,bg=empty?'var(--rl)':'var(--al)',bc=empty?'var(--r)':'var(--a)';
@@ -985,59 +930,7 @@ function renderOverview(){
   buildDeck('all');
 }
 
-// ─── MARK PAID ────────────────────────────────────────
-async function markPaid(id){
-  const s=S.shared.find(x=>x.id===id); if(!s)return;
-  try{
-    await api('POST',{action:'update_shared',shared_id:id,status:'paid'});
-    s.status='paid';
-    renderOverview(); buildDeck(S.deckFilter);
-    showToast('✅ Đã đánh dấu đã thanh toán');
-  }catch(e){showToast('❌ '+e.message);}
-}
-
-// ─── EDIT SHARED ──────────────────────────────────────
-function editShared(id){
-  const s=S.shared.find(x=>x.id===id); if(!s)return;
-  document.getElementById('edit-sh-id').value=id;
-  document.getElementById('esh-sh-title').textContent='✏️ Chỉnh sửa chi phí chung';
-  document.getElementById('esh-desc').value=s.description;
-  document.getElementById('esh-amt').value=s.amount;
-  document.getElementById('esh-cat').value=s.category;
-  document.getElementById('esh-date').value=s.date;
-  document.getElementById('esh-status').value=s.status;
-  const pbSel=document.getElementById('esh-paid');
-  pbSel.innerHTML=S.members.map(m=>`<option value="${m.name}">${m.emoji} ${m.name}</option>`).join('');
-  pbSel.value=s.paid_by;
-  openOv('edit-shared');
-}
-async function submitEditShared(){
-  const id=document.getElementById('edit-sh-id').value;
-  const desc=document.getElementById('esh-desc').value.trim();
-  const amount=parseFloat(document.getElementById('esh-amt').value);
-  const cat=document.getElementById('esh-cat').value;
-  const date=document.getElementById('esh-date').value;
-  const status=document.getElementById('esh-status').value;
-  const pbSel=document.getElementById('esh-paid');
-  const paid_by=pbSel.options[pbSel.selectedIndex]?.text||'';
-  if(!desc||!amount||!date){showToast('❗ Điền đầy đủ thông tin');return;}
-  try{
-    await api('POST',{action:'update_shared',shared_id:id,description:desc,amount,category:cat,date,status,paid_by});
-    const s=S.shared.find(x=>x.id===id);
-    if(s){s.description=desc;s.amount=amount;s.category=cat;s.date=date;s.status=status;s.paid_by=paid_by;}
-    renderOverview(); buildDeck(S.deckFilter);
-    closeOv('edit-shared'); showToast('✅ Đã cập nhật');
-  }catch(e){showToast('❌ '+e.message);}
-}
-async function deleteShared(id,desc){
-  if(!confirm(`Xoá "${desc}"?`))return;
-  try{
-    await api('POST',{action:'delete_shared',shared_id:id});
-    S.shared=S.shared.filter(x=>x.id!==id);
-    renderOverview(); buildDeck(S.deckFilter);
-    showToast('🗑️ Đã xoá');
-  }catch(e){showToast('❌ '+e.message);}
-}
+// ─── FLASHCARD DECK ───────────────────────────────────
 function filterDeck(chip,cat){
   document.querySelectorAll('#ov-chips .chip').forEach(c=>c.classList.remove('active'));
   chip.classList.add('active'); buildDeck(cat);
@@ -1069,12 +962,8 @@ function renderDeck(){
         <div class="fc-amt">${fmt(s.amount)}</div>
         <div class="fc-right">
           <div class="fc-date">${s.paid_by} · ${s.date}</div>
-          <div class="fc-status" style="cursor:pointer" onclick="event.stopPropagation();${s.status==='paid'?'':` markPaid('${s.id}')`}">${s.status==='paid'?'✅ Đã TT':'⏳ Nhấn → Đã TT'}</div>
+          <div class="fc-status">${s.status==='paid'?'✅ Đã TT':'⏳ Chưa TT'}</div>
         </div>
-      </div>
-      <div style="display:flex;gap:6px;margin-top:10px;position:relative;z-index:2">
-        <button onclick="event.stopPropagation();editShared('${s.id}')" style="flex:1;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:9px;padding:6px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--fb);-webkit-appearance:none">✏️ Sửa</button>
-        <button onclick="event.stopPropagation();deleteShared('${s.id}','${(s.description||'').replace(/'/g,'')}')" style="flex:1;background:rgba(255,80,80,.35);border:1px solid rgba(255,255,255,.2);color:#fff;border-radius:9px;padding:6px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--fb);-webkit-appearance:none">🗑️ Xoá</button>
       </div>`;
     inner.appendChild(card);
   });
@@ -1161,8 +1050,7 @@ async function loadPersonal(mid,pin){
   showToast('🔓 Đang tải ví...');
   const data=await api('GET',{action:'get_personal',member_id:mid,pin});
   const m=S.members.find(x=>x.id===mid);
-  S.personal={mid,name:m?.name||'',emoji:m?.emoji||'👤',pin,
-    accounts:data.accounts||[],transactions:data.transactions||[]};
+  S.personal={mid,name:m?.name||'',emoji:m?.emoji||'👤',pin,accounts:data.accounts||[],transactions:data.transactions||[]};
   renderPersonalContent();
   document.getElementById('personal-content').style.display='block';
   document.getElementById('lock-notice').style.display='none';
@@ -1175,53 +1063,26 @@ function lockPersonal(){
   showToast('🔒 Đã khoá ví');
 }
 function renderPersonalContent(){
-  const{name,emoji,accounts,transactions}=S.personal;
+  const{name,emoji,accounts}=S.personal;
   document.getElementById('ph-avatar').textContent=emoji;
   document.getElementById('ph-name').textContent=name;
-  // Tài sản = cộng tất cả (không phải debt), nợ = tổng debt
-  const assets=accounts.filter(a=>a.type!=='debt').reduce((s,a)=>s+(+a.balance||0),0);
-  const debts =accounts.filter(a=>a.type==='debt').reduce((s,a)=>s+(+a.balance||0),0);
-  // Tính thu/chi tháng hiện tại của cá nhân này
-  const now=new Date();
-  const thisMonth=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
-  const txThisMonth=(transactions||[]).filter(t=>String(t.date||'').startsWith(thisMonth));
-  const myIncome =txThisMonth.filter(t=>t.type==='income' ).reduce((s,t)=>s+(+t.amount||0),0);
-  const myExpense=txThisMonth.filter(t=>t.type==='expense').reduce((s,t)=>s+(+t.amount||0),0);
-  const monthLabel=`T${now.getMonth()+1}/${now.getFullYear()}`;
-  document.getElementById('ph-total').textContent=
-    `Tài sản: ${fmt(assets)}${debts>0?' · Nợ: -'+fmt(debts):''} · Thu ${monthLabel}: ${fmt(myIncome)} · Chi: ${fmt(myExpense)}`;
-  document.getElementById('tx-acc').innerHTML=accounts.map(a=>`<option value="${a.id}">${a.name}${a.type==='debt'?' (nợ)':''}</option>`).join('');
+  const total=accounts.reduce((s,a)=>s+(+a.balance||0),0);
+  document.getElementById('ph-total').textContent='Tổng tài sản: '+fmt(total);
+  document.getElementById('tx-acc').innerHTML=accounts.map(a=>`<option value="${a.id}">${a.name}</option>`).join('');
   renderAccounts(); renderTx();
 }
-function calcAccountBalance(accountId, baseBalance) {
-  // Tính số dư thực = số dư gốc + tổng thu - tổng chi theo account_id
-  // Lưu ý: balance đã được update theo từng tx khi add/edit/delete qua submitTx/delTx
-  // Hàm này chỉ dùng S.personal.accounts[].balance (đã được duy trì đúng)
-  return baseBalance;
-}
-
 function renderAccounts(){
-  const{accounts,transactions}=S.personal;
-  // Tính lại số dư cho từng tài khoản từ transactions trong bộ nhớ
-  const balMap={};
-  accounts.forEach(a=>{ balMap[a.id]=+a.balance||0; });
-
-  document.getElementById('acc-row').innerHTML=accounts.map((a,i)=>{
-    const isDebt=a.type==='debt';
-    const bal=+a.balance||0;
-    const grad=isDebt?'linear-gradient(135deg,#FF6B6B,#c0392b)':ACCG[i%ACCG.length];
-    const debtNote=isDebt?`<div style="font-size:10px;opacity:.75;margin-top:2px">Đang nợ ${fmt(bal)}</div>`:'';
-    return `<div class="acc-card" style="background:${grad}">
-      <div class="acc-type">${ALBL[a.type]||'TÀI KHOẢN'}${isDebt?' 🔴':''}</div>
-      <div class="acc-amt">${isDebt?'-':''}${fmt(bal)}</div>
+  const{accounts}=S.personal;
+  document.getElementById('acc-row').innerHTML=accounts.map((a,i)=>`
+    <div class="acc-card" style="background:${ACCG[i%ACCG.length]}">
+      <div class="acc-type">${ALBL[a.type]||'TÀI KHOẢN'}</div>
+      <div class="acc-amt">${fmt(a.balance)}</div>
       <div class="acc-name">${a.name}</div>
-      ${debtNote}
       <div class="acc-actions">
-        <button class="acc-btn" onclick="editAcc('${a.id}','${a.name.replace(/'/g,'&apos;')}','${a.type}',${bal})">✏️ Sửa</button>
-        <button class="acc-btn" onclick="delAcc('${a.id}','${a.name.replace(/'/g,'&apos;')}')">🗑️ Xoá</button>
+        <button class="acc-btn" onclick="editAcc('${a.id}','${a.name}','${a.type}',${a.balance})">✏️ Sửa</button>
+        <button class="acc-btn" onclick="delAcc('${a.id}','${a.name}')">🗑️ Xoá</button>
       </div>
-    </div>`;
-  }).join('')+
+    </div>`).join('')+
     `<div class="acc-add" onclick="openOv('add-account');clearAccForm()">
       <i class="ti ti-plus" style="font-size:24px"></i>
       <div style="font-size:11px;font-weight:700">Thêm ví</div>
@@ -1275,8 +1136,7 @@ function filterTx(f){
   renderTx();
 }
 function renderTx(){
-  // Sắp xếp theo ngày mới nhất trước
-  let txs=[...S.personal.transactions].sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+  let txs=S.personal.transactions;
   if(S.txFilter==='income')  txs=txs.filter(t=>t.type==='income');
   if(S.txFilter==='expense') txs=txs.filter(t=>t.type==='expense');
   const el=document.getElementById('tx-list');
@@ -1396,6 +1256,7 @@ function editInv(id){
   document.getElementById('inv-sh-title').textContent='✏️ Chỉnh sửa mặt hàng';
   document.getElementById('edit-inv-id').value=id;
   document.getElementById('inv-emoji').value=it.emoji;
+  document.getElementById('inv-epick-btn').textContent=it.emoji||'📦';
   document.getElementById('inv-name').value=it.name;
   document.getElementById('inv-qty').value=it.quantity;
   document.getElementById('inv-unit').value=it.unit;
@@ -1410,6 +1271,7 @@ function clearInvForm(){
   ['edit-inv-id','inv-emoji','inv-name','inv-qty','inv-unit','inv-min'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('inv-cat').value='hygiene';
   document.getElementById('inv-sbtn').innerHTML='<i class="ti ti-device-floppy"></i> Lưu mặt hàng';
+  resetPicker('inv','📦');
 }
 async function submitInv(){
   const name=document.getElementById('inv-name').value.trim();
@@ -1572,22 +1434,13 @@ async function submitTx(){
       // ── UPDATE ──
       const old=S.personal.transactions.find(x=>x.id===editTxId);
       await api('POST',{action:'update_transaction',member_id:S.personal.mid,tx_id:editTxId,account_id:accountId,date,amount,type:txType,category,description:desc,pin:S.personal.pin});
-      if(old){
-        const oldAcc=S.personal.accounts.find(a=>a.id===old.account_id);
-        const newAcc=S.personal.accounts.find(a=>a.id===accountId);
-        // Hoàn số dư tài khoản cũ
-        if(oldAcc){
-          const revert=old.type==='income'?-Number(old.amount):+Number(old.amount);
-          oldAcc.balance=(+oldAcc.balance)+revert;
-        }
-        // Áp số dư tài khoản mới
-        if(newAcc){
-          const delta=txType==='income'?+amount:-amount;
-          newAcc.balance=(+newAcc.balance)+delta;
-        }
-        // Cập nhật object giao dịch
-        old.amount=amount;old.type=txType;old.category=category;old.description=desc;old.date=date;old.account_id=accountId;
+      // Hoàn số dư cũ rồi áp số dư mới
+      const acc=S.personal.accounts.find(a=>a.id===accountId);
+      if(acc&&old){
+        acc.balance=(+acc.balance)+(old.type==='income'?-old.amount:+old.amount);
+        acc.balance=(+acc.balance)+(txType==='income'?amount:-amount);
       }
+      if(old){old.amount=amount;old.type=txType;old.category=category;old.description=desc;old.date=date;old.account_id=accountId;}
       showToast('✅ Đã cập nhật giao dịch');
     } else {
       // ── ADD ──
@@ -1595,15 +1448,7 @@ async function submitTx(){
       S.personal.transactions.unshift({id:r.id,date,amount,type:txType,category,description:desc,is_shared:isShared,account_id:accountId});
       if(isShared) S.shared.unshift({id:r.id+'s',description:desc,amount,category,date,paid_by:S.personal.name,status:'paid'});
       const acc=S.personal.accounts.find(a=>a.id===accountId);
-      if(acc){
-        const isDebt=acc.type==='debt';
-        // Debt: chi tiêu làm tăng nợ (balance+), thu nhập làm giảm nợ (balance-)
-        if(isDebt){
-          acc.balance=(+acc.balance)+(txType==='expense'?amount:-amount);
-        } else {
-          acc.balance=(+acc.balance)+(txType==='income'?amount:-amount);
-        }
-      }
+      if(acc) acc.balance=(+acc.balance)+(txType==='income'?amount:-amount);
       showToast('✅ Đã lưu'+(isShared?' (hiện ở Tổng quan)':''));
     }
     renderPersonalContent();
@@ -1627,6 +1472,99 @@ async function submitShared(){
   showToast('✅ Đã thêm chi phí chung');
   document.getElementById('sh-desc').value=''; document.getElementById('sh-amt').value='';
 }
+// ─── EMOJI PICKERS ────────────────────────────────────
+const EMOJIS_MEMBER = [
+  '👨','👩','👦','👧','🧑','👴','👵','👶','🧒','🧔','🧕','👲',
+  '🙋','🙎','💁','🧑‍💼','👨‍💼','👩‍💼','🧑‍🍳','👨‍🍳','👩‍🍳','🧑‍🎓','👨‍🎓','👩‍🎓',
+  '🧑‍🔬','👨‍⚕️','👩‍⚕️','🧑‍🌾','🦸','🦹','🧛','🧜','🧝','🧙',
+  '😊','😄','😎','🥰','🤩','😇','🤓','😴','🙃','🥳',
+  '🐱','🐶','🦊','🐻','🐼','🦁','🐯','🐧','🦄','🐸',
+];
+const EMOJIS_INV = [
+  '🧻','🧴','🧼','🪥','🧽','🧹','🧺','🧷','🪣','🪤',
+  '🛁','🚿','🪒','💊','🩺','🩹','🌡️','🩼','🧬','💉',
+  '🍽️','🥄','🍴','🫙','🍶','🥢','🧂','🫒','🧃','🥛',
+  '☕','🫖','🥤','🍵','🧋','🫗','🍺','🧊','🥚','🫓',
+  '🛒','🛍️','📦','🎁','🔋','💡','🔦','🕯️','🔌','🖇️',
+  '🔧','🔨','🪛','🧰','🪜','🗑️','🪟','🚪','🛏️','🪑',
+  '🛋️','🪴','🌿','🍃','🌱','🌻','🌸','❄️','🔑','🗝️',
+];
+
+function buildPickerGrid(scope) {
+  const emojis = scope === 'mem' ? EMOJIS_MEMBER : EMOJIS_INV;
+  const grid = document.getElementById(scope + '-epick-grid');
+  if (grid.dataset.built) return;
+  grid.dataset.built = '1';
+  grid.innerHTML = emojis.map(e =>
+    `<button class="eg-btn" onclick="pickEmoji('${scope}','${e}')">${e}</button>`
+  ).join('');
+}
+
+function togglePicker(scope) {
+  buildPickerGrid(scope);
+  const grid = document.getElementById(scope + '-epick-grid');
+  grid.style.display = grid.style.display === 'none' ? 'flex' : 'none';
+}
+
+function pickEmoji(scope, emoji) {
+  document.getElementById(scope + '-emoji').value = emoji;
+  document.getElementById(scope + '-epick-btn').textContent = emoji;
+  document.getElementById(scope + '-epick-grid').style.display = 'none';
+  // highlight selection
+  document.querySelectorAll('#' + scope + '-epick-grid .eg-btn').forEach(b =>
+    b.classList.toggle('sel', b.textContent === emoji));
+}
+
+function syncPickerBtn(scope) {
+  const v = document.getElementById(scope + '-emoji').value.trim();
+  if (v) document.getElementById(scope + '-epick-btn').textContent = v;
+}
+
+function resetPicker(scope, defaultEmoji) {
+  const grid = document.getElementById(scope + '-epick-grid');
+  if (grid) { grid.style.display = 'none'; delete grid.dataset.built; grid.innerHTML = ''; }
+  const btn = document.getElementById(scope + '-epick-btn');
+  if (btn) btn.textContent = defaultEmoji;
+}
+
+// ─── CHANGE PIN ───────────────────────────────────────
+function openChangePinOv() {
+  if (!S.personal.mid) { showToast('❗ Chưa mở ví'); return; }
+  document.getElementById('cpn-emoji').textContent = S.personal.emoji || '👤';
+  document.getElementById('cpn-name').textContent  = S.personal.name  || '—';
+  document.getElementById('cpn-old').value = '';
+  document.getElementById('cpn-new').value = '';
+  document.getElementById('cpn-confirm').value = '';
+  document.getElementById('cpn-err').textContent = '';
+  openOv('change-pin');
+}
+
+async function submitChangePin() {
+  const oldPin    = document.getElementById('cpn-old').value;
+  const newPin    = document.getElementById('cpn-new').value;
+  const confirmPin= document.getElementById('cpn-confirm').value;
+  const errEl     = document.getElementById('cpn-err');
+  errEl.textContent = '';
+  if (oldPin.length !== 4 || newPin.length !== 4 || confirmPin.length !== 4) {
+    errEl.textContent = '❗ Tất cả PIN phải đủ 4 số'; return;
+  }
+  if (newPin !== confirmPin) { errEl.textContent = '❌ PIN mới và xác nhận không khớp'; return; }
+  if (newPin === oldPin)     { errEl.textContent = '❗ PIN mới phải khác PIN cũ'; return; }
+  const btn = document.getElementById('cpn-sbtn');
+  btn.disabled = true; btn.innerHTML = '<div class="spin"></div> Đang xử lý...';
+  try {
+    // 1. Xác minh PIN cũ
+    const vr = await api('GET', { action:'verify_pin', member_id: S.personal.mid, pin: oldPin });
+    if (!vr.valid) { errEl.textContent = '❌ PIN hiện tại không đúng'; return; }
+    // 2. Đổi PIN
+    await api('POST', { action:'change_pin', member_id: S.personal.mid, pin: oldPin, new_pin: newPin });
+    S.personal.pin = newPin;
+    closeOv('change-pin');
+    showToast('✅ Đổi PIN thành công!');
+  } catch(e) { errEl.textContent = '❌ ' + e.message; }
+  finally { btn.disabled = false; btn.innerHTML = '<i class="ti ti-key"></i> Xác nhận đổi PIN'; }
+}
+
 async function submitMember(){
   const name=document.getElementById('mem-name').value.trim();
   const emoji=document.getElementById('mem-emoji').value.trim()||'👤';
@@ -1638,7 +1576,10 @@ async function submitMember(){
   S.members.push({id:r.id,name,emoji,color,role});
   renderPersonalMembers(); renderOverview();
   closeOv('add-member'); showToast('✅ Đã thêm '+name);
-  document.getElementById('mem-name').value=''; document.getElementById('mem-pin').value='';
+  document.getElementById('mem-name').value='';
+  document.getElementById('mem-emoji').value='';
+  document.getElementById('mem-pin').value='';
+  resetPicker('mem','👤');
 }
 
 // ─── FILL SELECTS ─────────────────────────────────────
@@ -1647,8 +1588,22 @@ function fillSelects(){
   if(el) el.innerHTML=S.members.map(m=>`<option value="${m.id}">${m.emoji} ${m.name}</option>`).join('');
 }
 
-// ─── PAGE SWIPE ĐÃ BỎ ────────────────────────────────
-// Chuyển trang chỉ qua bottom navigation tabs
+// ─── PAGE SWIPE ───────────────────────────────────────
+(()=>{
+  const pagesEl=document.getElementById('pages');
+  const ORDER=['overview','personal','inventory','notes'];
+  let sx=0,sy=0;
+  pagesEl.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY;},{passive:true});
+  pagesEl.addEventListener('touchend',e=>{
+    const dx=e.changedTouches[0].clientX-sx;
+    const dy=e.changedTouches[0].clientY-sy;
+    if(Math.abs(dx)<Math.abs(dy)*1.4||Math.abs(dx)<65)return;
+    if(e.target.closest('#fdinner'))return;
+    const cur=ORDER.indexOf(S.curPage);
+    if(dx<-65&&cur<ORDER.length-1) goPage(ORDER[cur+1]);
+    else if(dx>65&&cur>0) goPage(ORDER[cur-1]);
+  });
+})();
 
 // ─── INIT ─────────────────────────────────────────────
 document.getElementById('tx-date').value=nd();
