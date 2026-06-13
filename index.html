@@ -228,6 +228,34 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
 /* ── Repay overlay ── */
 .repay-modal-title{font-family:var(--fh);font-size:16px;font-weight:800;margin-bottom:4px;}
 .repay-credit-info{font-size:13px;color:var(--mu);margin-bottom:16px;font-weight:600;}
+/* ── Recurring section ── */
+.rec-header{display:flex;align-items:center;justify-content:space-between;margin:14px 0 8px}
+.rec-header .sec-title{margin:0}
+.rec-card{background:var(--card);border-radius:14px;padding:13px 14px;margin-bottom:8px;border-left:4px solid var(--mu);position:relative;overflow:hidden}
+.rec-card.urgent{border-left-color:var(--r);background:linear-gradient(135deg,var(--rl) 0%,var(--card) 60%)}
+.rec-card.warning{border-left-color:var(--a);background:linear-gradient(135deg,var(--al) 0%,var(--card) 60%)}
+.rec-card.paid{border-left-color:var(--g);opacity:.65}
+.rec-card.overdue{border-left-color:#c0392b;background:linear-gradient(135deg,#FFE0E0 0%,var(--card) 60%)}
+.rec-top{display:flex;align-items:center;gap:10px}
+.rec-ico{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;background:var(--bg2)}
+.rec-info{flex:1;min-width:0}
+.rec-name{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rec-sub{font-size:11px;color:var(--mu);margin-top:2px}
+.rec-right{text-align:right;flex-shrink:0}
+.rec-amt{font-size:15px;font-weight:800;font-family:var(--fh)}
+.rec-badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:99px;margin-top:3px;display:inline-block}
+.rec-badge.paid{background:var(--gl);color:var(--gd)}
+.rec-badge.overdue{background:#FFE0E0;color:#c0392b}
+.rec-badge.urgent{background:var(--rl);color:var(--r)}
+.rec-badge.warning{background:var(--al);color:var(--ad)}
+.rec-badge.normal{background:var(--bg2);color:var(--mu)}
+.rec-actions{display:flex;gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid var(--div)}
+.rec-btn{flex:1;font-size:11px;font-weight:700;padding:7px 4px;border-radius:10px;border:none;cursor:pointer;font-family:var(--fb);display:flex;align-items:center;justify-content:center;gap:4px;-webkit-appearance:none}
+.rec-btn.pay{background:var(--g);color:#fff}
+.rec-btn.edit{background:var(--bl);color:#fff}
+.rec-btn.del{background:var(--rl);color:var(--r)}
+.rec-btn:active{opacity:.75}
+.rec-period{font-size:10px;color:var(--mu);background:var(--bg2);border-radius:99px;padding:2px 8px;display:inline-block;margin-top:4px}
 /* ── Change PIN overlay ── */
 .cpn-avatar{font-size:46px;text-align:center;margin-bottom:6px}
 .cpn-name{font-family:var(--fh);font-size:16px;font-weight:800;text-align:center;margin-bottom:16px}
@@ -306,7 +334,10 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
           <div class="stat-val" id="d-lowstock">—</div><div class="stat-lbl">Kho sắp hết</div>
         </div>
       </div>
-      <div class="sec-title">⏰ Phí định kỳ sắp đến hạn</div>
+      <div class="rec-header">
+        <div class="sec-title">💳 Chi phí định kỳ</div>
+        <button class="add-btn" onclick="openOv('add-recurring');clearRecForm()"><i class="ti ti-plus"></i> Thêm</button>
+      </div>
       <div id="recurring-list"></div>
       <div class="sec-title" style="margin-top:4px">📦 Kho cần bổ sung</div>
       <div id="lowstock-list"></div>
@@ -427,6 +458,76 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
       <input class="fi" id="repay-desc" type="text" placeholder="Trả thẻ tín dụng tháng 7..."></div>
     <button class="sbtn green" id="repay-sbtn" onclick="submitRepay()"><i class="ti ti-circle-check"></i> Xác nhận trả nợ</button>
     <button class="cbtn" onclick="closeOv('repay')">Huỷ</button>
+  </div>
+</div>
+
+<!-- ADD / EDIT RECURRING -->
+<div class="overlay" id="overlay-add-recurring">
+  <div class="sheet">
+    <div class="handle"></div>
+    <div class="sh-title" id="rec-sheet-title">➕ Thêm chi phí định kỳ</div>
+    <input type="hidden" id="rec-edit-id">
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="fg" style="grid-column:1/-1"><label class="fl">Tên khoản phí</label>
+        <input class="fi" id="rec-name" type="text" placeholder="VD: YouTube Premium, Tiền điện..."></div>
+      <div class="fg"><label class="fl">Số tiền (VNĐ)</label>
+        <input class="fi" id="rec-amount" type="number" inputmode="decimal" placeholder="0" min="0"></div>
+      <div class="fg"><label class="fl">Icon</label>
+        <input class="fi" id="rec-icon" type="text" placeholder="📱" maxlength="4" style="font-size:20px;text-align:center"></div>
+      <div class="fg"><label class="fl">Danh mục</label>
+        <select class="fi" id="rec-category">
+          <option value="subscription">📱 Subscription</option>
+          <option value="electric">⚡ Điện</option>
+          <option value="water">💧 Nước</option>
+          <option value="internet">🌐 Internet</option>
+          <option value="tv">📺 TV/Cable</option>
+          <option value="other">📌 Khác</option>
+        </select></div>
+      <div class="fg"><label class="fl">Chu kỳ</label>
+        <select class="fi" id="rec-freq">
+          <option value="weekly">Hàng tuần</option>
+          <option value="monthly" selected>Hàng tháng</option>
+          <option value="quarterly">Hàng quý</option>
+          <option value="yearly">Hàng năm</option>
+        </select></div>
+      <div class="fg" style="grid-column:1/-1"><label class="fl">Ngày đến hạn tiếp theo</label>
+        <input class="fi" id="rec-due" type="date"></div>
+      <div class="fg" style="grid-column:1/-1"><label class="fl">Thanh toán qua tài khoản (tuỳ chọn)</label>
+        <select class="fi" id="rec-acc">
+          <option value="">-- Không chỉ định --</option>
+        </select></div>
+      <div class="fg" style="grid-column:1/-1"><label class="fl">Thành viên phụ trách</label>
+        <select class="fi" id="rec-member">
+          <option value="">-- Không chỉ định --</option>
+        </select></div>
+      <div class="fg" style="grid-column:1/-1"><label class="fl">Ghi chú</label>
+        <input class="fi" id="rec-note" type="text" placeholder="VD: Tháng 5 tăng giá..."></div>
+    </div>
+
+    <button class="sbtn green" id="rec-sbtn" onclick="submitRec()"><i class="ti ti-circle-check"></i> Lưu</button>
+    <button class="cbtn" onclick="closeOv('add-recurring')">Huỷ</button>
+  </div>
+</div>
+
+<!-- PAY RECURRING -->
+<div class="overlay" id="overlay-pay-recurring">
+  <div class="sheet">
+    <div class="handle"></div>
+    <div class="sh-title">✅ Xác nhận thanh toán</div>
+    <input type="hidden" id="pay-rec-id">
+    <div class="repay-modal-title" id="pay-rec-name">—</div>
+    <div class="repay-credit-info" id="pay-rec-info">—</div>
+    <div class="fg"><label class="fl">Số tiền thực thanh toán (VNĐ)</label>
+      <input class="fi" id="pay-rec-amt" type="number" inputmode="decimal" placeholder="0" style="font-size:20px;font-weight:700"></div>
+    <div class="fg"><label class="fl">Ngày thanh toán</label>
+      <input class="fi" id="pay-rec-date" type="date"></div>
+    <div class="fg"><label class="fl">Ghi vào tài khoản</label>
+      <select class="fi" id="pay-rec-acc-sel"></select></div>
+    <div class="fg"><label class="fl">Thành viên thanh toán</label>
+      <select class="fi" id="pay-rec-member-sel"></select></div>
+    <button class="sbtn green" id="pay-rec-sbtn" onclick="submitPayRec()"><i class="ti ti-circle-check"></i> Đã thanh toán</button>
+    <button class="cbtn" onclick="closeOv('pay-recurring')">Huỷ</button>
   </div>
 </div>
 
@@ -689,6 +790,15 @@ const BASE_DEMO = {
     {id:'i5',name:'Bàn chải đánh răng',emoji:'🪥',quantity:4,  unit:'cái', min_qty:2,category:'hygiene'},
     {id:'i6',name:'Túi rác',           emoji:'🗑️',quantity:1,  unit:'cuộn',min_qty:2,category:'general'},
   ],
+  recurring:[
+    {id:'r1',name:'YouTube Premium',icon:'▶️',category:'subscription',amount:79000, freq:'monthly', due:'2026-06-15',acc_id:'a2',member_id:'m1',note:'',paid_this_period:false},
+    {id:'r2',name:'Google One 200GB',icon:'☁️',category:'subscription',amount:49000, freq:'monthly', due:'2026-06-18',acc_id:'a3',member_id:'m2',note:'',paid_this_period:false},
+    {id:'r3',name:'Tiền điện',       icon:'⚡',category:'electric',    amount:850000,freq:'monthly', due:'2026-06-20',acc_id:'a1',member_id:'m1',note:'Trung bình ~850k',paid_this_period:false},
+    {id:'r4',name:'Tiền nước',       icon:'💧',category:'water',       amount:180000,freq:'monthly', due:'2026-06-22',acc_id:'a1',member_id:'m2',note:'',paid_this_period:false},
+    {id:'r5',name:'Internet VNPT',   icon:'🌐',category:'internet',    amount:250000,freq:'monthly', due:'2026-07-01',acc_id:'a2',member_id:'m1',note:'',paid_this_period:false},
+    {id:'r6',name:'3G Viettel',      icon:'📶',category:'subscription',amount:70000, freq:'monthly', due:'2026-06-28',acc_id:'a1',member_id:'m1',note:'',paid_this_period:false},
+    {id:'r7',name:'Apple iCloud+',   icon:'🍎',category:'subscription',amount:25000, freq:'monthly', due:'2026-07-05',acc_id:'a3',member_id:'m2',note:'',paid_this_period:false},
+  ],
   notes:[
     {id:'n1',title:'📋 Mua sắm tuần tới',  body:'Khăn giấy (2 gói), nước giặt Omo 3kg, túi rác, dầu gội bé An.',color:'#EDE9FF',created_at:'2025-06-05'},
     {id:'n2',title:'💡 Nhắc nhở tháng 7',  body:'Học kỳ 2 bé Nam trước 15/7. Bảo hiểm xe máy bố. Sinh nhật bà nội 20/7.',color:'#E0FFF6',created_at:'2025-06-03'},
@@ -769,7 +879,7 @@ async function api(method, p) {
 
   // Phân loại read vs write dựa vào action
   const READ_ACTIONS = ['get_members','get_shared','get_inventory','get_notes_public',
-                        'get_dashboard','get_personal','get_accounts','verify_pin'];
+                        'get_dashboard','get_personal','get_accounts','verify_pin','get_recurring'];
   const isRead = READ_ACTIONS.includes(p.action);
 
   try {
@@ -802,6 +912,24 @@ async function demoApi(p){
   if(a==='get_inventory')    return JSON.parse(JSON.stringify(d.inventory));
   if(a==='get_notes_public') return JSON.parse(JSON.stringify(d.notes));
   if(a==='get_recurring')    return JSON.parse(JSON.stringify(d.recurring||[]));
+  if(a==='add_recurring'){
+    const nr={id:'r'+Date.now(),name:p.name,icon:p.icon||'📌',category:p.category||'other',
+      amount:+p.amount||0,freq:p.freq||'monthly',due:p.due,acc_id:p.acc_id||'',
+      member_id:p.member_id||'',note:p.note||'',paid_this_period:false};
+    d.recurring.unshift(nr); return {id:nr.id};
+  }
+  if(a==='update_recurring'){
+    const r=d.recurring.find(x=>x.id===p.rec_id);
+    if(r){r.name=p.name;r.icon=p.icon;r.category=p.category;r.amount=+p.amount;
+          r.freq=p.freq;r.due=p.due;r.acc_id=p.acc_id;r.member_id=p.member_id;r.note=p.note;}
+    return {updated:true};
+  }
+  if(a==='delete_recurring'){ d.recurring=d.recurring.filter(x=>x.id!==p.rec_id); return {deleted:true}; }
+  if(a==='pay_recurring'){
+    const r=d.recurring.find(x=>x.id===p.rec_id);
+    if(r){ r.paid_this_period=true; r.due=p.next_due; }
+    return {paid:true};
+  }
   if(a==='verify_pin')       return { valid: p.pin==='1234' };
   if(a==='change_pin'){
     if(p.pin!=='1234') throw new Error('PIN hiện tại không đúng');
@@ -887,16 +1015,16 @@ async function syncAll(){
   document.getElementById('sdot').className='sdot';
   document.getElementById('stext').textContent='Đang đồng bộ...';
   try{
-    const [dash,members,shared,inv,notes] = await Promise.all([
+    const [dash,members,shared,inv,notes,recurring] = await Promise.all([
       api('GET',{action:'get_dashboard'}),
       api('GET',{action:'get_members'}),
       api('GET',{action:'get_shared'}),
       api('GET',{action:'get_inventory'}),
       api('GET',{action:'get_notes_public'}),
+      api('GET',{action:'get_recurring'}),
     ]);
-    // recurring không có trong GAS, dùng array rỗng nếu không có
     S.dashboard=dash; S.members=members; S.shared=shared;
-    S.inventory=inv; S.notes=notes; S.recurring=[];
+    S.inventory=inv; S.notes=notes; S.recurring=recurring||[];
     renderOverview(); renderPersonalMembers(); renderInventory(); renderNotes(); fillSelects();
     document.getElementById('topbar-period').textContent = per(dash?.period);
     document.getElementById('sdot').className = 'sdot'+(CFG.DEMO?' demo':'');
@@ -940,16 +1068,7 @@ function renderOverview(){
     return `<div class="bcol"><div class="bbar" style="height:${Math.max(h,4)}px;background:${last?'#6C63FF':'#C4BEFE'}"></div><div class="blbl" style="${last?'color:var(--pri);font-weight:700':''}">${'T'+parseInt(m)}</div></div>`;
   }).join('');
 
-  document.getElementById('recurring-list').innerHTML=(S.recurring||[]).map(r=>{
-    const dl=Math.ceil((new Date(r.due)-new Date())/86400000);
-    const urgent=dl<=7,bg=urgent?'var(--rl)':'var(--al)',bc=urgent?'var(--r)':'var(--a)';
-    const bt=dl<=0?'Quá hạn!':dl<=7?dl+'ng nữa':r.due.slice(5);
-    return `<div class="acard" style="border-left:3px solid ${bc}">
-      <div class="aico" style="background:${bg}">${r.icon}</div>
-      <div class="ainfo"><div class="aname">${r.name}</div><div class="asub">Đến hạn: ${r.due}</div></div>
-      <div class="aright"><div class="aamt">${fmt(r.amount)}</div><div class="abadge" style="background:${bg};color:${bc}">${bt}</div></div>
-    </div>`;
-  }).join('')||'<div class="empty" style="padding:10px 0"><p>Không có phí sắp đến hạn 🎉</p></div>';
+  renderRecurring();
 
   document.getElementById('lowstock-list').innerHTML=low.map(i=>{
     const empty=+i.quantity<=0,bg=empty?'var(--rl)':'var(--al)',bc=empty?'var(--r)':'var(--a)';
@@ -1062,6 +1181,221 @@ function setupDeckSwipe(){
 }
 
 // ─── PERSONAL ─────────────────────────────────────────
+// ─── RECURRING ────────────────────────────────────────
+const FREQ_LBL={weekly:'Hàng tuần',monthly:'Hàng tháng',quarterly:'Hàng quý',yearly:'Hàng năm'};
+
+function recDaysLeft(due){
+  if(!due) return 9999;
+  const today=new Date(); today.setHours(0,0,0,0);
+  const d=new Date(due); d.setHours(0,0,0,0);
+  return Math.round((d-today)/86400000);
+}
+
+function recNextDue(due, freq){
+  const d=new Date(due);
+  if(freq==='weekly')    d.setDate(d.getDate()+7);
+  else if(freq==='monthly')  d.setMonth(d.getMonth()+1);
+  else if(freq==='quarterly') d.setMonth(d.getMonth()+3);
+  else if(freq==='yearly')   d.setFullYear(d.getFullYear()+1);
+  return d.toISOString().split('T')[0];
+}
+
+function recStatus(r){
+  if(r.paid_this_period) return 'paid';
+  const dl=recDaysLeft(r.due);
+  if(dl<0)   return 'overdue';
+  if(dl<=7)  return 'urgent';
+  if(dl<=14) return 'warning';
+  return 'normal';
+}
+
+function renderRecurring(){
+  const list=S.recurring||[];
+  if(!list.length){
+    document.getElementById('recurring-list').innerHTML=
+      '<div class="empty" style="padding:10px 0"><p>Chưa có khoản định kỳ nào 📋</p></div>';
+    return;
+  }
+  // Sort: quá hạn → sắp đến → bình thường → đã trả
+  const order={overdue:0,urgent:1,warning:2,normal:3,paid:4};
+  const sorted=[...list].sort((a,b)=>{
+    const sa=order[recStatus(a)], sb=order[recStatus(b)];
+    if(sa!==sb) return sa-sb;
+    return (a.due||'').localeCompare(b.due||'');
+  });
+
+  document.getElementById('recurring-list').innerHTML=sorted.map(r=>{
+    const st=recStatus(r);
+    const dl=recDaysLeft(r.due);
+    const mem=S.members.find(m=>m.id===r.member_id);
+    let badgeText='', badgeCls='normal';
+    if(st==='paid')    { badgeText='✅ Đã trả'; badgeCls='paid'; }
+    else if(st==='overdue') { badgeText='❌ Quá hạn '+Math.abs(dl)+'ng'; badgeCls='overdue'; }
+    else if(st==='urgent')  { badgeText='⏰ Còn '+dl+' ngày'; badgeCls='urgent'; }
+    else if(st==='warning') { badgeText='📅 Còn '+dl+' ngày'; badgeCls='warning'; }
+    else { badgeText='📅 '+r.due; badgeCls='normal'; }
+
+    const payBtn = st!=='paid'
+      ? `<button class="rec-btn pay" onclick="openPayRec('${r.id}')"><i class="ti ti-circle-check"></i> Đã trả</button>` : '';
+    const unPayBtn = st==='paid'
+      ? `<button class="rec-btn edit" style="background:var(--bg2);color:var(--mu)" onclick="unPayRec('${r.id}')"><i class="ti ti-refresh"></i> Hoàn tác</button>` : '';
+
+    return `<div class="rec-card ${st}" id="rec-${r.id}">
+      <div class="rec-top">
+        <div class="rec-ico">${r.icon||ICON[r.category]||'📌'}</div>
+        <div class="rec-info">
+          <div class="rec-name">${r.name}</div>
+          <div class="rec-sub">${mem?mem.emoji+' '+mem.name+' · ':''}<span class="rec-period">${FREQ_LBL[r.freq]||r.freq}</span></div>
+          ${r.note?`<div class="rec-sub" style="margin-top:2px;font-style:italic">${r.note}</div>`:''}
+        </div>
+        <div class="rec-right">
+          <div class="rec-amt">${fmt(r.amount)}</div>
+          <div class="rec-badge ${badgeCls}">${badgeText}</div>
+        </div>
+      </div>
+      <div class="rec-actions">
+        ${payBtn}${unPayBtn}
+        <button class="rec-btn edit" onclick="editRec('${r.id}')"><i class="ti ti-pencil"></i> Sửa</button>
+        <button class="rec-btn del"  onclick="delRec('${r.id}','${r.name.replace(/'/g,'')}')"><i class="ti ti-trash"></i> Xoá</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function clearRecForm(){
+  document.getElementById('rec-edit-id').value='';
+  document.getElementById('rec-sheet-title').textContent='➕ Thêm chi phí định kỳ';
+  document.getElementById('rec-name').value='';
+  document.getElementById('rec-amount').value='';
+  document.getElementById('rec-icon').value='';
+  document.getElementById('rec-category').value='subscription';
+  document.getElementById('rec-freq').value='monthly';
+  document.getElementById('rec-due').value=nd();
+  document.getElementById('rec-note').value='';
+  // Fill member select
+  document.getElementById('rec-member').innerHTML=
+    '<option value="">-- Không chỉ định --</option>'+
+    S.members.map(m=>`<option value="${m.id}">${m.emoji} ${m.name}</option>`).join('');
+  // Fill account select (all members' accounts for overview)
+  document.getElementById('rec-acc').innerHTML='<option value="">-- Không chỉ định --</option>';
+}
+
+function editRec(id){
+  const r=S.recurring.find(x=>x.id===id); if(!r) return;
+  clearRecForm();
+  document.getElementById('rec-edit-id').value=id;
+  document.getElementById('rec-sheet-title').textContent='✏️ Sửa chi phí định kỳ';
+  document.getElementById('rec-name').value=r.name;
+  document.getElementById('rec-amount').value=r.amount;
+  document.getElementById('rec-icon').value=r.icon||'';
+  document.getElementById('rec-category').value=r.category||'subscription';
+  document.getElementById('rec-freq').value=r.freq||'monthly';
+  document.getElementById('rec-due').value=r.due||nd();
+  document.getElementById('rec-note').value=r.note||'';
+  document.getElementById('rec-member').value=r.member_id||'';
+  openOv('add-recurring');
+}
+
+async function submitRec(){
+  const id    = document.getElementById('rec-edit-id').value;
+  const name  = document.getElementById('rec-name').value.trim();
+  const amount= parseFloat(document.getElementById('rec-amount').value);
+  const icon  = document.getElementById('rec-icon').value.trim()||'📌';
+  const cat   = document.getElementById('rec-category').value;
+  const freq  = document.getElementById('rec-freq').value;
+  const due   = document.getElementById('rec-due').value;
+  const note  = document.getElementById('rec-note').value.trim();
+  const memId = document.getElementById('rec-member').value;
+  const accId = document.getElementById('rec-acc').value;
+  if(!name){ showToast('❗ Nhập tên khoản phí'); return; }
+  if(!amount||amount<=0){ showToast('❗ Nhập số tiền'); return; }
+  if(!due){ showToast('❗ Chọn ngày đến hạn'); return; }
+  const btn=document.getElementById('rec-sbtn');
+  btn.disabled=true; btn.innerHTML='<div class="spin"></div> Đang lưu...';
+  try{
+    const payload={name,icon,category:cat,amount,freq,due,note,acc_id:accId,member_id:memId};
+    if(id){
+      await api('POST',{action:'update_recurring',rec_id:id,...payload});
+      const r=S.recurring.find(x=>x.id===id);
+      if(r) Object.assign(r,payload);
+      showToast('✅ Đã cập nhật');
+    } else {
+      const res=await api('POST',{action:'add_recurring',...payload});
+      S.recurring.unshift({id:res.id,...payload,paid_this_period:false});
+      showToast('✅ Đã thêm khoản định kỳ');
+    }
+    renderRecurring();
+    closeOv('add-recurring');
+  }catch(e){showToast('❌ '+e.message);}
+  finally{btn.disabled=false;btn.innerHTML='<i class="ti ti-circle-check"></i> Lưu';}
+}
+
+async function delRec(id,name){
+  if(!confirm(`Xoá khoản định kỳ "${name}"?`)) return;
+  await api('POST',{action:'delete_recurring',rec_id:id});
+  S.recurring=S.recurring.filter(x=>x.id!==id);
+  renderRecurring(); showToast('🗑️ Đã xoá');
+}
+
+function openPayRec(id){
+  const r=S.recurring.find(x=>x.id===id); if(!r) return;
+  document.getElementById('pay-rec-id').value=id;
+  document.getElementById('pay-rec-name').textContent=r.icon+' '+r.name;
+  document.getElementById('pay-rec-info').textContent=
+    'Số tiền dự kiến: '+fmt(r.amount)+' · Hạn: '+r.due;
+  document.getElementById('pay-rec-amt').value=r.amount;
+  document.getElementById('pay-rec-date').value=nd();
+  // Member select
+  document.getElementById('pay-rec-member-sel').innerHTML=
+    S.members.map(m=>`<option value="${m.id}"${m.id===r.member_id?' selected':''}>${m.emoji} ${m.name}</option>`).join('');
+  // Account select — will be populated when member changes (simplified: show all)
+  document.getElementById('pay-rec-acc-sel').innerHTML=
+    '<option value="">-- Không ghi giao dịch --</option>';
+  openOv('pay-recurring');
+}
+
+async function submitPayRec(){
+  const id     = document.getElementById('pay-rec-id').value;
+  const amount = parseFloat(document.getElementById('pay-rec-amt').value);
+  const date   = document.getElementById('pay-rec-date').value;
+  const memId  = document.getElementById('pay-rec-member-sel').value;
+  const accId  = document.getElementById('pay-rec-acc-sel').value;
+  if(!amount||amount<=0){showToast('❗ Nhập số tiền');return;}
+  const r=S.recurring.find(x=>x.id===id); if(!r) return;
+  const nextDue=recNextDue(r.due, r.freq);
+  const btn=document.getElementById('pay-rec-sbtn');
+  btn.disabled=true; btn.innerHTML='<div class="spin"></div>';
+  try{
+    // Đánh dấu đã trả + cập nhật next_due
+    await api('POST',{action:'pay_recurring',rec_id:id,next_due:nextDue,amount,date});
+    r.paid_this_period=true; r.due=nextDue;
+    // Nếu có tài khoản → tạo giao dịch chi
+    if(accId && memId){
+      const res2=await api('POST',{action:'add_transaction',member_id:memId,account_id:accId,
+        date,amount,type:'expense',category:r.category||'other',
+        description:'Thanh toán: '+r.name,is_shared:false,pin:''});
+      if(S.personal.mid===memId){
+        S.personal.transactions.unshift({id:res2.id,date,amount,type:'expense',
+          category:r.category||'other',description:'Thanh toán: '+r.name,
+          is_shared:false,account_id:accId});
+        renderPersonalContent();
+      }
+    }
+    renderRecurring(); closeOv('pay-recurring');
+    showToast('✅ Đã thanh toán! Kỳ tiếp: '+nextDue);
+  }catch(e){showToast('❌ '+e.message);}
+  finally{btn.disabled=false;btn.innerHTML='<i class="ti ti-circle-check"></i> Đã thanh toán';}
+}
+
+async function unPayRec(id){
+  const r=S.recurring.find(x=>x.id===id); if(!r) return;
+  // Rollback: về kỳ trước
+  await api('POST',{action:'update_recurring',rec_id:id,...r,paid_this_period:false});
+  r.paid_this_period=false;
+  renderRecurring(); showToast('↩️ Đã hoàn tác');
+}
+
+// ─── RENDER PERSONAL MEMBERS ──────────────────────────
 function renderPersonalMembers(){
   document.getElementById('mrow-personal').innerHTML=S.members.map(m=>`
     <div class="mcard" onclick="reqPin('${m.id}','${m.name}','${m.emoji}','${m.color}')">
