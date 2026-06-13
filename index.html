@@ -87,7 +87,7 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
 .tx-wrap{position:relative;overflow:hidden;border-radius:15px;margin-bottom:7px}
 .tx-actions{position:absolute;right:0;top:0;bottom:0;display:flex}
 .tx-act-btn{width:62px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10px;font-weight:700;cursor:pointer;border:none;-webkit-appearance:none;color:#fff}
-.tx-act-btn.edit{background:var(--bl)}.tx-act-btn.del{background:var(--r)}
+.tx-act-btn.edit{background:var(--bl)}.tx-act-btn.del{background:var(--r)}.tx-act-btn.repay{background:var(--g)}
 .tx-act-btn i{font-size:18px}
 .tx-item{position:relative;background:var(--card);border:1px solid var(--br);border-radius:15px;padding:11px 13px;display:flex;align-items:center;gap:11px;transition:transform .22s ease;will-change:transform;margin-bottom:0;cursor:grab}
 .tag{display:inline-flex;align-items:center;padding:2px 7px;border-radius:99px;font-size:10px;font-weight:700;background:var(--pri-l);color:var(--pri)}
@@ -157,9 +157,9 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
 .sq-btn{width:30px;height:30px;border-radius:8px;border:1.5px solid var(--br);background:transparent;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--tx);-webkit-appearance:none;font-family:var(--fh)}
 .sq-btn:active{background:var(--pri-l);border-color:var(--pri)}
 .sq-btn.flex1{flex:1;font-size:12px;font-weight:700}
-.note-card{border-radius:14px;padding:14px;margin-bottom:9px;border-left:4px solid}
-.note-title{font-size:14px;font-weight:700;margin-bottom:4px}
-.note-body{font-size:13px;line-height:1.55;opacity:.75}
+.note-card{border-radius:14px;padding:14px;margin-bottom:9px;border-left:4px solid;overflow:hidden}
+.note-title{font-size:14px;font-weight:700;margin-bottom:4px;word-break:break-word;overflow-wrap:anywhere}
+.note-body{font-size:13px;line-height:1.55;opacity:.75;word-break:break-word;overflow-wrap:anywhere;white-space:pre-wrap}
 .note-foot{display:flex;align-items:center;justify-content:space-between;margin-top:9px}
 .note-date{font-size:10px;color:var(--mu);font-weight:600}
 .note-actions{display:flex;gap:10px}
@@ -220,6 +220,14 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
 .epick-grid::-webkit-scrollbar{display:none}
 .eg-btn{width:36px;height:36px;font-size:20px;border-radius:8px;border:1.5px solid transparent;background:transparent;cursor:pointer;-webkit-appearance:none;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .eg-btn:active,.eg-btn.sel{background:var(--pri-l);border-color:var(--pri)}
+/* ── Credit account ── */
+.acc-card.credit{background:linear-gradient(135deg,#FF6B6B,#c0392b);}
+.acc-credit-lbl{font-size:10px;background:rgba(255,255,255,.25);border-radius:99px;padding:2px 8px;display:inline-block;margin-top:4px;font-weight:700;}
+.repay-btn{font-size:11px;font-weight:700;padding:5px 10px;border-radius:99px;background:rgba(255,255,255,.9);border:none;color:#c0392b;cursor:pointer;font-family:var(--fb);display:inline-flex;align-items:center;gap:3px;-webkit-appearance:none;}
+.repay-btn:active{opacity:.75;}
+/* ── Repay overlay ── */
+.repay-modal-title{font-family:var(--fh);font-size:16px;font-weight:800;margin-bottom:4px;}
+.repay-credit-info{font-size:13px;color:var(--mu);margin-bottom:16px;font-weight:600;}
 /* ── Change PIN overlay ── */
 .cpn-avatar{font-size:46px;text-align:center;margin-bottom:6px}
 .cpn-name{font-family:var(--fh);font-size:16px;font-weight:800;text-align:center;margin-bottom:16px}
@@ -401,6 +409,27 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
   </div>
 </div>
 
+<!-- REPAY (Trả nợ) -->
+<div class="overlay" id="overlay-repay">
+  <div class="sheet">
+    <div class="handle"></div>
+    <div class="sh-title">💳 Trả nợ / Thanh toán credit</div>
+    <input type="hidden" id="repay-acc-id">
+    <div class="repay-modal-title" id="repay-acc-name">—</div>
+    <div class="repay-credit-info" id="repay-credit-info">Dư nợ: —</div>
+    <div class="fg"><label class="fl">Số tiền trả (VNĐ)</label>
+      <input class="fi" id="repay-amt" type="number" inputmode="decimal" placeholder="0" min="0" style="font-size:22px;font-weight:700"></div>
+    <div class="fg"><label class="fl">Ngày trả</label>
+      <input class="fi" id="repay-date" type="date"></div>
+    <div class="fg"><label class="fl">Thanh toán từ ví/tài khoản</label>
+      <select class="fi" id="repay-from-acc"></select></div>
+    <div class="fg"><label class="fl">Ghi chú</label>
+      <input class="fi" id="repay-desc" type="text" placeholder="Trả thẻ tín dụng tháng 7..."></div>
+    <button class="sbtn green" id="repay-sbtn" onclick="submitRepay()"><i class="ti ti-circle-check"></i> Xác nhận trả nợ</button>
+    <button class="cbtn" onclick="closeOv('repay')">Huỷ</button>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <!-- PIN -->
@@ -498,6 +527,7 @@ html,body{height:100%;font-family:var(--fb);background:var(--bg);color:var(--tx)
         <option value="cash">💵 Tiền mặt</option><option value="bank">🏦 Ngân hàng</option>
         <option value="ewallet">📱 Ví điện tử</option><option value="savings">🐷 Tiết kiệm</option>
         <option value="invest">📈 Đầu tư</option>
+        <option value="credit">💳 Thẻ tín dụng / Vay nợ</option>
       </select></div>
     <div class="fg"><label class="fl">Số dư hiện tại (VNĐ)</label>
       <input class="fi" id="acc-bal" type="number" inputmode="decimal" placeholder="0" min="0"></div>
@@ -665,29 +695,31 @@ const BASE_DEMO = {
     {id:'n3',title:'🏖️ Kế hoạch nghỉ hè', body:'Đà Nẵng 20-27/7. Ngân sách ~15tr. Đặt khách sạn trước 30/6.',color:'#FFF3E0',created_at:'2025-06-01'},
   ],
   personal:{
-    m1:{accounts:[{id:'a1',name:'Tiền mặt',type:'cash',balance:5500000},{id:'a2',name:'VCB Minh',type:'bank',balance:27000000}],
+    m1:{accounts:[{id:'a1',name:'Tiền mặt',type:'cash',balance:5500000},{id:'a2',name:'VCB Minh',type:'bank',balance:27000000},{id:'a7',name:'Visa Credit',type:'credit',balance:0}],
         transactions:[
-          {id:'t1',date:'2025-06-01',amount:22000000,type:'income', category:'salary',   description:'Lương T6',     is_shared:false},
-          {id:'t2',date:'2025-06-03',amount:45000,   type:'expense',category:'food',     description:'Cà phê sáng',  is_shared:false},
-          {id:'t3',date:'2025-06-05',amount:850000,  type:'expense',category:'electric', description:'Tiền điện T6', is_shared:true},
-          {id:'t4',date:'2025-06-07',amount:200000,  type:'expense',category:'transport',description:'Xăng xe',      is_shared:false},
+          {id:'t1',date:'2025-06-01',amount:22000000,type:'income', category:'salary',   description:'Lương T6',     is_shared:false,account_id:'a2'},
+          {id:'t2',date:'2025-06-03',amount:45000,   type:'expense',category:'food',     description:'Cà phê sáng',  is_shared:false,account_id:'a1'},
+          {id:'t3',date:'2025-06-05',amount:850000,  type:'expense',category:'electric', description:'Tiền điện T6', is_shared:true,account_id:'a1'},
+          {id:'t4',date:'2025-06-07',amount:200000,  type:'expense',category:'transport',description:'Xăng xe',      is_shared:false,account_id:'a1'},
+          {id:'t13',date:'2025-06-08',amount:1500000,type:'expense',category:'shopping', description:'Mua đồ qua credit',is_shared:false,account_id:'a7'},
+          {id:'t14',date:'2025-06-10',amount:350000, type:'expense',category:'food',     description:'Ăn nhà hàng credit',is_shared:false,account_id:'a7'},
         ]},
     m2:{accounts:[{id:'a3',name:'MoMo Lan',type:'ewallet',balance:3100000},{id:'a4',name:'ACB Lan',type:'savings',balance:25000000}],
         transactions:[
-          {id:'t5',date:'2025-06-02',amount:15000000,type:'income', category:'salary',  description:'Lương T6',   is_shared:false},
-          {id:'t6',date:'2025-06-03',amount:1200000, type:'expense',category:'food',    description:'Chợ tuần 1', is_shared:true},
-          {id:'t7',date:'2025-06-04',amount:650000,  type:'expense',category:'shopping',description:'Mua quần áo',is_shared:false},
-          {id:'t8',date:'2025-06-05',amount:320000,  type:'expense',category:'other',   description:'Đồ dùng chung',is_shared:true},
+          {id:'t5',date:'2025-06-02',amount:15000000,type:'income', category:'salary',  description:'Lương T6',   is_shared:false,account_id:'a4'},
+          {id:'t6',date:'2025-06-03',amount:1200000, type:'expense',category:'food',    description:'Chợ tuần 1', is_shared:true,account_id:'a3'},
+          {id:'t7',date:'2025-06-04',amount:650000,  type:'expense',category:'shopping',description:'Mua quần áo',is_shared:false,account_id:'a3'},
+          {id:'t8',date:'2025-06-05',amount:320000,  type:'expense',category:'other',   description:'Đồ dùng chung',is_shared:true,account_id:'a3'},
         ]},
     m3:{accounts:[{id:'a5',name:'Heo đất Nam',type:'savings',balance:5200000}],
         transactions:[
-          {id:'t9', date:'2025-06-01',amount:500000, type:'income', category:'other',    description:'Tiền tiêu vặt',is_shared:false},
-          {id:'t10',date:'2025-06-05',amount:1500000,type:'expense',category:'education',description:'Học phí ANV',  is_shared:false},
+          {id:'t9', date:'2025-06-01',amount:500000, type:'income', category:'other',    description:'Tiền tiêu vặt',is_shared:false,account_id:'a5'},
+          {id:'t10',date:'2025-06-05',amount:1500000,type:'expense',category:'education',description:'Học phí ANV',  is_shared:false,account_id:'a5'},
         ]},
     m4:{accounts:[{id:'a6',name:'Heo đất An',type:'savings',balance:3800000}],
         transactions:[
-          {id:'t11',date:'2025-06-01',amount:300000,type:'income', category:'other',    description:'Tiền tiêu vặt',is_shared:false},
-          {id:'t12',date:'2025-06-04',amount:80000, type:'expense',category:'education',description:'Mua sách vở',  is_shared:false},
+          {id:'t11',date:'2025-06-01',amount:300000,type:'income', category:'other',    description:'Tiền tiêu vặt',is_shared:false,account_id:'a6'},
+          {id:'t12',date:'2025-06-04',amount:80000, type:'expense',category:'education',description:'Mua sách vở',  is_shared:false,account_id:'a6'},
         ]},
   }
 };
@@ -823,7 +855,7 @@ const COL ={food:'#FF9F43',electric:'#6C63FF',water:'#20BFC1',internet:'#4FACFE'
 const BG  ={food:'#FFF3E0',electric:'#EDE9FF',water:'#E0FAFB',internet:'#EAF6FF',tv:'#FFF0F7',education:'#FFE8E8',transport:'#FFFFF0',health:'#E0FFF6',shopping:'#FFF0F7',salary:'#E0FFF6',subscription:'#F5F3FF',other:'#F5F3FF'};
 const GRAD={food:'linear-gradient(135deg,#FF9F43,#FF6B6B)',electric:'linear-gradient(135deg,#6C63FF,#a78bfa)',water:'linear-gradient(135deg,#20BFC1,#085450)',internet:'linear-gradient(135deg,#4FACFE,#185FA5)',tv:'linear-gradient(135deg,#FF6EB4,#a78bfa)',education:'linear-gradient(135deg,#FF6B6B,#FF9F43)',subscription:'linear-gradient(135deg,#a78bfa,#6C63FF)',other:'linear-gradient(135deg,#9592B8,#6C63FF)'};
 const ACCG=['linear-gradient(135deg,#6C63FF,#a78bfa)','linear-gradient(135deg,#20BFC1,#6DECAE)','linear-gradient(135deg,#FF6EB4,#FF9A8B)','linear-gradient(135deg,#FF9F43,#FFCA77)','linear-gradient(135deg,#4FACFE,#4364F7)'];
-const ALBL={cash:'TIỀN MẶT',bank:'NGÂN HÀNG',ewallet:'VÍ ĐIỆN TỬ',savings:'TIẾT KIỆM',invest:'ĐẦU TƯ'};
+const ALBL={cash:'TIỀN MẶT',bank:'NGÂN HÀNG',ewallet:'VÍ ĐIỆN TỬ',savings:'TIẾT KIỆM',invest:'ĐẦU TƯ',credit:'THẺ TÍN DỤNG'};
 const NACC={'#EDE9FF':'#6C63FF','#E0FFF6':'#00C896','#FFF3E0':'#FF9F43','#EAF6FF':'#4FACFE','#FFF0F7':'#FF6EB4','#FFFFF0':'#8B8B00'};
 
 // ─── NAVIGATION ───────────────────────────────────────
@@ -879,12 +911,25 @@ async function syncAll(){
 }
 
 // ─── RENDER OVERVIEW ──────────────────────────────────
+function calcDashboardTotals(d){
+  // Nếu GAS/demo trả về đúng thì dùng, ngược lại tính lại từ shared + personal
+  // Tính total_shared từ S.shared (tháng hiện tại)
+  const period = d.period || nd().slice(0,7);
+  const sharedMonth = S.shared.filter(s=>String(s.date||'').startsWith(period));
+  const totalShared = sharedMonth.reduce((s,x)=>s+Number(x.amount||0),0);
+  // Tổng thu/chi: dùng d nếu > 0, fallback tính từ tất cả shared chi phí tháng
+  let inc = Number(d.total_income||0);
+  let exp = Number(d.total_expense||0);
+  if(exp===0 && totalShared>0) exp = totalShared;
+  return {totalShared: totalShared||Number(d.total_shared||0), inc, exp};
+}
 function renderOverview(){
   const d=S.dashboard; if(!d) return;
+  const {totalShared,inc,exp} = calcDashboardTotals(d);
   document.getElementById('d-period').textContent  = per(d.period);
-  document.getElementById('d-shared').textContent  = fmt(d.total_shared);
-  document.getElementById('d-income').textContent  = '+'+fmt(d.total_income);
-  document.getElementById('d-expense').textContent = '-'+fmt(d.total_expense);
+  document.getElementById('d-shared').textContent  = fmt(totalShared);
+  document.getElementById('d-income').textContent  = '+'+fmt(inc);
+  document.getElementById('d-expense').textContent = '-'+fmt(exp);
   document.getElementById('d-members').textContent = d.member_count+' người';
   const low=S.inventory.filter(i=>+i.quantity<=+i.min_qty);
   document.getElementById('d-lowstock').textContent = low.length+' mặt hàng';
@@ -939,7 +984,7 @@ function buildDeck(filter){
   S.deckFilter=filter;
   let data=S.shared;
   if(filter!=='all') data=data.filter(s=>s.category===filter);
-  S.deckData=[...data].sort((a,b)=>b.date.localeCompare(a.date));
+  S.deckData=[...data].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
   S.deckIdx=0; renderDeck();
 }
 function renderDeck(){
@@ -1063,30 +1108,74 @@ function lockPersonal(){
   showToast('🔒 Đã khoá ví');
 }
 function renderPersonalContent(){
-  const{name,emoji,accounts}=S.personal;
+  const{name,emoji,accounts,transactions}=S.personal;
   document.getElementById('ph-avatar').textContent=emoji;
   document.getElementById('ph-name').textContent=name;
-  const total=accounts.reduce((s,a)=>s+(+a.balance||0),0);
+
+  // Tính số dư thực từ giao dịch cộng dồn theo từng tài khoản
+  const computed = computeAccountBalances(accounts, transactions);
+
+  // Tổng tài sản = tổng normal + trừ credit debt
+  const total = computed.reduce((s,a)=>{
+    return a.isCredit ? s - Math.abs(a.computedBalance) : s + a.computedBalance;
+  }, 0);
   document.getElementById('ph-total').textContent='Tổng tài sản: '+fmt(total);
+
+  // Cập nhật select giao dịch
   document.getElementById('tx-acc').innerHTML=accounts.map(a=>`<option value="${a.id}">${a.name}</option>`).join('');
-  renderAccounts(); renderTx();
+  renderAccounts(computed); renderTx();
 }
-function renderAccounts(){
-  const{accounts}=S.personal;
-  document.getElementById('acc-row').innerHTML=accounts.map((a,i)=>`
-    <div class="acc-card" style="background:${ACCG[i%ACCG.length]}">
+
+function computeAccountBalances(accounts, transactions){
+  return accounts.map(acc=>{
+    const isCredit = acc.type==='credit';
+    // Bắt đầu từ số dư gốc
+    let bal = Number(acc.balance||0);
+    // Cộng dồn tất cả giao dịch thuộc tài khoản này
+    (transactions||[]).forEach(t=>{
+      if(t.account_id !== acc.id) return;
+      if(isCredit){
+        // Credit: chi tiêu = tăng dư nợ (âm), thu/trả nợ = giảm dư nợ
+        if(t.type==='expense') bal -= Number(t.amount||0);
+        else bal += Number(t.amount||0);
+      } else {
+        if(t.type==='income')  bal += Number(t.amount||0);
+        else bal -= Number(t.amount||0);
+      }
+    });
+    return {...acc, computedBalance: bal, isCredit};
+  });
+}
+function renderAccounts(computed){
+  if(!computed) computed=computeAccountBalances(S.personal.accounts, S.personal.transactions);
+  document.getElementById('acc-row').innerHTML=computed.map((a,i)=>{
+    const isCredit = a.isCredit;
+    const bg = isCredit
+      ? 'linear-gradient(135deg,#FF6B6B,#c0392b)'
+      : ACCG[i%ACCG.length];
+    const balDisplay = isCredit
+      ? (a.computedBalance < 0 ? '-'+fmt(Math.abs(a.computedBalance)) : fmt(a.computedBalance))
+      : fmt(a.computedBalance);
+    const creditExtra = isCredit
+      ? `<div class="acc-credit-lbl">${a.computedBalance<0?'Dư nợ: '+fmt(Math.abs(a.computedBalance)):'Đã thanh toán đủ ✓'}</div>` : '';
+    const repayBtn = isCredit && a.computedBalance<0
+      ? `<button class="repay-btn" onclick="openRepay('${a.id}','${a.name.replace(/'/g,"\\'")}',${a.computedBalance})">💳 Trả nợ</button>`:'';
+    return `<div class="acc-card" style="background:${bg}">
       <div class="acc-type">${ALBL[a.type]||'TÀI KHOẢN'}</div>
-      <div class="acc-amt">${fmt(a.balance)}</div>
+      <div class="acc-amt">${balDisplay}</div>
       <div class="acc-name">${a.name}</div>
+      ${creditExtra}
       <div class="acc-actions">
-        <button class="acc-btn" onclick="editAcc('${a.id}','${a.name}','${a.type}',${a.balance})">✏️ Sửa</button>
-        <button class="acc-btn" onclick="delAcc('${a.id}','${a.name}')">🗑️ Xoá</button>
+        <button class="acc-btn" onclick="editAcc('${a.id}','${a.name.replace(/'/g,"\\'")}','${a.type}',${a.balance})">✏️ Sửa</button>
+        <button class="acc-btn" onclick="delAcc('${a.id}','${a.name.replace(/'/g,"\\'")}')">🗑️ Xoá</button>
+        ${repayBtn}
       </div>
-    </div>`).join('')+
-    `<div class="acc-add" onclick="openOv('add-account');clearAccForm()">
-      <i class="ti ti-plus" style="font-size:24px"></i>
-      <div style="font-size:11px;font-weight:700">Thêm ví</div>
     </div>`;
+  }).join('')+
+  `<div class="acc-add" onclick="openOv('add-account');clearAccForm()">
+    <i class="ti ti-plus" style="font-size:24px"></i>
+    <div style="font-size:11px;font-weight:700">Thêm ví</div>
+  </div>`;
 }
 function editAcc(id,name,type,balance){
   S.editAccId=id;
@@ -1130,36 +1219,119 @@ async function delAcc(id,name){
   S.personal.accounts=S.personal.accounts.filter(a=>a.id!==id);
   renderPersonalContent(); showToast('🗑️ Đã xoá '+name);
 }
+
+// ─── REPAY (Trả nợ credit) ────────────────────────────
+function openRepay(accId, accName, currentBalance){
+  document.getElementById('repay-acc-id').value = accId;
+  document.getElementById('repay-acc-name').textContent = '💳 '+accName;
+  const debt = Math.abs(currentBalance);
+  document.getElementById('repay-credit-info').textContent = 'Dư nợ hiện tại: '+fmt(debt);
+  document.getElementById('repay-amt').value = '';
+  document.getElementById('repay-date').value = nd();
+  document.getElementById('repay-desc').value = 'Trả nợ thẻ tín dụng '+accName;
+  // Điền các tài khoản non-credit để chọn nguồn tiền trả
+  const nonCredit = S.personal.accounts.filter(a=>a.type!=='credit');
+  document.getElementById('repay-from-acc').innerHTML = nonCredit.length
+    ? nonCredit.map(a=>`<option value="${a.id}">${a.name}</option>`).join('')
+    : '<option value="">-- Không có ví khác --</option>';
+  openOv('repay');
+}
+
+async function submitRepay(){
+  const accId   = document.getElementById('repay-acc-id').value;
+  const amount  = parseFloat(document.getElementById('repay-amt').value);
+  const date    = document.getElementById('repay-date').value;
+  const desc    = document.getElementById('repay-desc').value.trim()||'Trả nợ credit';
+  const fromAcc = document.getElementById('repay-from-acc').value;
+  if(!amount||amount<=0){showToast('❗ Nhập số tiền trả');return;}
+  if(!date){showToast('❗ Chọn ngày');return;}
+  const btn=document.getElementById('repay-sbtn');
+  btn.disabled=true; btn.innerHTML='<div class="spin"></div> Đang lưu...';
+  try{
+    // 1. Ghi income vào tài khoản credit (giảm dư nợ)
+    const r1=await api('POST',{action:'add_transaction',member_id:S.personal.mid,account_id:accId,
+      date,amount,type:'income',category:'other',description:desc,is_shared:false,pin:S.personal.pin});
+    S.personal.transactions.unshift({id:r1.id,date,amount,type:'income',category:'other',description:desc,is_shared:false,account_id:accId,is_repay:true});
+
+    // 2. Nếu có ví nguồn → ghi expense từ ví đó
+    if(fromAcc){
+      const r2=await api('POST',{action:'add_transaction',member_id:S.personal.mid,account_id:fromAcc,
+        date,amount,type:'expense',category:'other',description:desc,is_shared:false,pin:S.personal.pin});
+      S.personal.transactions.unshift({id:r2.id,date,amount,type:'expense',category:'other',description:desc,is_shared:false,account_id:fromAcc,is_repay:true});
+    }
+
+    renderPersonalContent();
+    closeOv('repay');
+    showToast('✅ Đã ghi nhận trả nợ '+fmt(amount));
+  }catch(e){showToast('❌ '+e.message);}
+  finally{btn.disabled=false;btn.innerHTML='<i class="ti ti-circle-check"></i> Xác nhận trả nợ';}
+}
 function filterTx(f){
   S.txFilter=f;
   ['all','income','expense'].forEach(t=>document.getElementById('ftx-'+t)?.classList.toggle('active',t===f));
   renderTx();
 }
 function renderTx(){
-  let txs=S.personal.transactions;
+  let txs=[...S.personal.transactions].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
   if(S.txFilter==='income')  txs=txs.filter(t=>t.type==='income');
   if(S.txFilter==='expense') txs=txs.filter(t=>t.type==='expense');
   const el=document.getElementById('tx-list');
   if(!txs.length){el.innerHTML='<div class="empty"><i class="ti ti-receipt-off"></i><p>Không có giao dịch</p></div>';return;}
-  el.innerHTML=txs.map(t=>`
-    <div class="tx-wrap" id="txw-${t.id}">
+  // Tạo map account_id → account để kiểm tra credit
+  const accMap = {};
+  (S.personal.accounts||[]).forEach(a=>accMap[a.id]=a);
+  el.innerHTML=txs.map(t=>{
+    const acc = accMap[t.account_id];
+    const isCredit = acc && acc.type==='credit';
+    // Chỉ hiện nút Trả nợ với giao dịch expense thuộc tài khoản credit
+    const showRepay = isCredit && t.type==='expense' && !t.is_repay;
+    const btnCount = showRepay ? 3 : 2;
+    const swW = btnCount * 62;
+    const safeDesc = (t.description||'').replace(/'/g,'').replace(/"/g,'');
+    const accName = acc ? acc.name.replace(/'/g,"\\'") : '';
+    return `
+    <div class="tx-wrap" id="txw-${t.id}" data-swipe-w="${swW}">
       <div class="tx-actions">
         <button class="tx-act-btn edit" onclick="editTx('${t.id}')"><i class="ti ti-pencil"></i>Sửa</button>
-        <button class="tx-act-btn del"  onclick="delTx('${t.id}','${(t.description||'').replace(/'/g,'')}')"><i class="ti ti-trash"></i>Xoá</button>
+        <button class="tx-act-btn del"  onclick="delTx('${t.id}','${safeDesc}')"><i class="ti ti-trash"></i>Xoá</button>
+        ${showRepay?`<button class="tx-act-btn repay" onclick="openRepayFromTx('${t.id}')"><i class="ti ti-credit-card-pay"></i>Trả nợ</button>`:''}
       </div>
       <div class="tx-item" id="txi-${t.id}" data-txid="${t.id}">
         <div class="tx-ico" style="background:${BG[t.category]};color:${COL[t.category]}">${ICON[t.category]||'📌'}</div>
         <div class="tx-info">
           <div class="tx-name">${t.description}</div>
-          <div class="tx-meta">${t.date} · ${t.category}${(t.is_shared===true||t.is_shared==='TRUE')?' <span class="tag">👥 Chung</span>':''}</div>
+          <div class="tx-meta">${t.date} · ${t.category}${(t.is_shared===true||t.is_shared==='TRUE')?' <span class="tag">👥 Chung</span>':''}${t.is_repay?' <span class="tag" style="background:var(--gl);color:var(--gd)">💳 Trả nợ</span>':''}</div>
         </div>
         <div class="tx-amt ${t.type==='income'?'in':'out'}">${t.type==='income'?'+':'-'}${fmt(t.amount)}</div>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
   initTxSwipe();
 }
 
-const SWIPE_W = 124; // 2 buttons × 62px
+// Mở form trả nợ từ giao dịch cụ thể (prefill số tiền = số tiền giao dịch đó)
+function openRepayFromTx(txId){
+  closeTxSwipe();
+  const t = S.personal.transactions.find(x=>x.id===txId);
+  if(!t) return;
+  const acc = (S.personal.accounts||[]).find(a=>a.id===t.account_id);
+  if(!acc) return;
+  const computed = computeAccountBalances(S.personal.accounts, S.personal.transactions);
+  const cAcc = computed.find(a=>a.id===acc.id);
+  const debt = cAcc ? Math.abs(Math.min(0, cAcc.computedBalance)) : 0;
+  document.getElementById('repay-acc-id').value = acc.id;
+  document.getElementById('repay-acc-name').textContent = '💳 '+acc.name;
+  document.getElementById('repay-credit-info').textContent = 'Dư nợ hiện tại: '+fmt(debt)+(debt>0?' · Khoản này: '+fmt(t.amount):'');
+  document.getElementById('repay-amt').value = t.amount; // prefill số tiền giao dịch
+  document.getElementById('repay-date').value = nd();
+  document.getElementById('repay-desc').value = 'Trả nợ: '+t.description;
+  const nonCredit = S.personal.accounts.filter(a=>a.type!=='credit');
+  document.getElementById('repay-from-acc').innerHTML = nonCredit.length
+    ? nonCredit.map(a=>`<option value="${a.id}">${a.name}</option>`).join('')
+    : '<option value="">-- Không có ví khác --</option>';
+  openOv('repay');
+}
+
 let _activeTxWrap = null;
 
 function closeTxSwipe() {
@@ -1175,22 +1347,27 @@ function initTxSwipe() {
     let sx = 0, moved = false, dragging = false, cur = 0;
     item.addEventListener('touchstart', e => {
       sx = e.touches[0].clientX; moved = false; dragging = true;
-      cur = _activeTxWrap === item.closest('.tx-wrap') ? -SWIPE_W : 0;
+      const wrap = item.closest('.tx-wrap');
+      const swW = parseInt(wrap.dataset.swipeW)||124;
+      cur = _activeTxWrap === wrap ? -swW : 0;
     }, { passive: true });
     item.addEventListener('touchmove', e => {
       if (!dragging) return;
       const dx = e.touches[0].clientX - sx;
       if (Math.abs(dx) > 6) moved = true;
-      const next = Math.min(0, Math.max(-SWIPE_W, cur + dx));
+      const wrap = item.closest('.tx-wrap');
+      const swW = parseInt(wrap.dataset.swipeW)||124;
+      const next = Math.min(0, Math.max(-swW, cur + dx));
       item.style.transform = `translateX(${next}px)`;
     }, { passive: true });
     item.addEventListener('touchend', e => {
       if (!dragging) return; dragging = false;
       const dx = e.changedTouches[0].clientX - sx;
       const wrap = item.closest('.tx-wrap');
+      const swW = parseInt(wrap.dataset.swipeW)||124;
       if (dx < -40) {
         if (_activeTxWrap && _activeTxWrap !== wrap) closeTxSwipe();
-        item.style.transform = `translateX(-${SWIPE_W}px)`;
+        item.style.transform = `translateX(-${swW}px)`;
         _activeTxWrap = wrap;
       } else if (dx > 20 || !moved) {
         item.style.transform = '';
@@ -1407,11 +1584,6 @@ async function delTx(id,desc){
   if(!confirm(`Xoá giao dịch "${desc}"?`))return;
   try{
     await api('POST',{action:'delete_transaction',member_id:S.personal.mid,tx_id:id,pin:S.personal.pin});
-    const t=S.personal.transactions.find(x=>x.id===id);
-    if(t){
-      const acc=S.personal.accounts.find(a=>a.id===t.account_id);
-      if(acc) acc.balance=(+acc.balance)+(t.type==='income'?-t.amount:+t.amount);
-    }
     S.personal.transactions=S.personal.transactions.filter(x=>x.id!==id);
     renderPersonalContent();
     showToast('🗑️ Đã xoá giao dịch');
@@ -1434,12 +1606,6 @@ async function submitTx(){
       // ── UPDATE ──
       const old=S.personal.transactions.find(x=>x.id===editTxId);
       await api('POST',{action:'update_transaction',member_id:S.personal.mid,tx_id:editTxId,account_id:accountId,date,amount,type:txType,category,description:desc,pin:S.personal.pin});
-      // Hoàn số dư cũ rồi áp số dư mới
-      const acc=S.personal.accounts.find(a=>a.id===accountId);
-      if(acc&&old){
-        acc.balance=(+acc.balance)+(old.type==='income'?-old.amount:+old.amount);
-        acc.balance=(+acc.balance)+(txType==='income'?amount:-amount);
-      }
       if(old){old.amount=amount;old.type=txType;old.category=category;old.description=desc;old.date=date;old.account_id=accountId;}
       showToast('✅ Đã cập nhật giao dịch');
     } else {
@@ -1447,8 +1613,6 @@ async function submitTx(){
       const r=await api('POST',{action:'add_transaction',member_id:S.personal.mid,account_id:accountId,date,amount,type:txType,category,description:desc,is_shared:isShared,pin:S.personal.pin});
       S.personal.transactions.unshift({id:r.id,date,amount,type:txType,category,description:desc,is_shared:isShared,account_id:accountId});
       if(isShared) S.shared.unshift({id:r.id+'s',description:desc,amount,category,date,paid_by:S.personal.name,status:'paid'});
-      const acc=S.personal.accounts.find(a=>a.id===accountId);
-      if(acc) acc.balance=(+acc.balance)+(txType==='income'?amount:-amount);
       showToast('✅ Đã lưu'+(isShared?' (hiện ở Tổng quan)':''));
     }
     renderPersonalContent();
@@ -1588,22 +1752,7 @@ function fillSelects(){
   if(el) el.innerHTML=S.members.map(m=>`<option value="${m.id}">${m.emoji} ${m.name}</option>`).join('');
 }
 
-// ─── PAGE SWIPE ───────────────────────────────────────
-(()=>{
-  const pagesEl=document.getElementById('pages');
-  const ORDER=['overview','personal','inventory','notes'];
-  let sx=0,sy=0;
-  pagesEl.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY;},{passive:true});
-  pagesEl.addEventListener('touchend',e=>{
-    const dx=e.changedTouches[0].clientX-sx;
-    const dy=e.changedTouches[0].clientY-sy;
-    if(Math.abs(dx)<Math.abs(dy)*1.4||Math.abs(dx)<65)return;
-    if(e.target.closest('#fdinner'))return;
-    const cur=ORDER.indexOf(S.curPage);
-    if(dx<-65&&cur<ORDER.length-1) goPage(ORDER[cur+1]);
-    else if(dx>65&&cur>0) goPage(ORDER[cur-1]);
-  });
-})();
+// ─── PAGE SWIPE: đã tắt theo yêu cầu ──────────────────
 
 // ─── INIT ─────────────────────────────────────────────
 document.getElementById('tx-date').value=nd();
